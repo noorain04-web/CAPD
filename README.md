@@ -28,3 +28,14 @@ The page does not transmit patient data to a server. Data can still appear in do
 - American Academy of Audiology, Clinical Practice Guidelines: Diagnosis, Treatment, and Management of Children and Adults with CAPD (2010).
 
 Clinical deployment requires qualified review, usability testing, appropriate standardized instruments and validation of scoring and decision rules.
+
+## Indian-developed CAPD screening resources
+
+The screening section now links to published Indian resources and records clinician-entered results without reproducing author-controlled item wording:
+
+- **SCAP (children)** — Screening Checklist for Auditory Processing, associated with Yathiraj and Mascarenhas and studied in school-age children. An accessible research record is available at [ResearchGate](https://www.researchgate.net/publication/284588609_Utility_of_the_screening_checklist_for_auditory_processing_SCAP_in_detecting_CAPD_in_children). Published work reports a cut score of 6 in the studied sample, with sensitivity 71% and specificity 68%; these estimates are not universal and should not be applied without the authorised version and its instructions.
+- **SCAP-A (adults)** — [Vaidyanath & Yathiraj, 2014, article and PDF](https://www.journalofhearingscience.com/Screening-checklist-for-auditory-processing-nin-adults-SCAP-A-Development-and-preliminary,120593,0,2.html). The original development study involved adults aged 55–75 and self-report/family forms; the article describes preliminary findings and says further validation was needed. Do not assume validity for all adults aged 18+.
+- **STAP** — [Preliminary report](https://pubmed.ncbi.nlm.nih.gov/24224993/) and [validation study](https://pubmed.ncbi.nlm.nih.gov/24447685/). STAP is a performance-based child screening test, not a questionnaire, and requires appropriate test materials and trained administration.
+- **Indian clinical practice context** — [A Survey on Screening and Diagnostic Criteria of Auditory Processing Disorders in India](https://pmc.ncbi.nlm.nih.gov/articles/PMC10909056/).
+
+The web pages and papers are research sources, not automatic permission to redistribute full test materials. The app does not embed the official questionnaire items, claim licensing, or auto-score the standardized tools. The clinician must obtain and use an authorised version, follow its administration/scoring instructions, check language and age suitability, and enter the official result. The original app prompts remain explicitly labelled as supplementary, non-validated history questions.
