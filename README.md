@@ -39,3 +39,11 @@ The screening section now links to published Indian resources and records clinic
 - **Indian clinical practice context** — [A Survey on Screening and Diagnostic Criteria of Auditory Processing Disorders in India](https://pmc.ncbi.nlm.nih.gov/articles/PMC10909056/).
 
 The web pages and papers are research sources, not automatic permission to redistribute full test materials. The app does not embed the official questionnaire items, claim licensing, or auto-score the standardized tools. The clinician must obtain and use an authorised version, follow its administration/scoring instructions, check language and age suitability, and enter the official result. The original app prompts remain explicitly labelled as supplementary, non-validated history questions.
+
+## BMQ-R workflow (official source-linked form)
+
+The screening page includes a BMQ-R workflow with links to the official [questionnaire PDF](https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20form%209-2020.pdf), [administration and interpretation manual](https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20Manual%209-2020%20Update.pdf), and [Educational Audiology Association information page](https://www.edaud.org/bmqr). The 48 item prompts are not copied into this repository. Administer the official form externally, then enter category-level Yes and NA counts into the app.
+
+The app calculates ΣCAP from DEC + TFM + INT + ORG + APD, excludes GEN, adjusts the denominator for applicable NA responses, and displays a prompt for further APD testing when ΣCAP is 8 or more as described in the official manual. This is a screening prompt only—not a diagnosis or a substitute for professional interpretation. The manual identifies age groups under 6, 6–18 and over 18 years and notes the relevance of educational exposure, respondent and prior therapies. Use the official manual to verify all entries and interpretation.
+
+BMQ-R is not an India-specific instrument. Do not imply that its English-language results are validated for Hindi, Punjabi or other Indian languages without evidence of an appropriate validated version. The app's custom symptom prompts remain separate and explicitly non-validated.
