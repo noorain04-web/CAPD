@@ -82,7 +82,30 @@ const domains=["Sound localization / lateralization","Auditory discrimination","
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 function v(id){return document.getElementById(id)?.value?.trim()||""}function checks(id){return [...document.querySelectorAll("#"+id+" input:checked")].map(x=>x.value)}
 function path(){return Number(v("age"))<18?"child":"adult"}
-function renderQ(){let qs=path()==="child"?childQ:adultQ;document.getElementById("questions").innerHTML=qs.map((q,i)=>'<div class="qrow"><label for="q'+i+'"><b>'+(i+1)+'. '+esc(q[0])+'</b><br>'+esc(q[1])+'</label><select id="q'+i+'" data-domain="'+esc(q[0])+'"><option>Not answered</option><option>Never / rarely</option><option>Sometimes</option><option>Often</option><option>Unable to judge</option></select></div>').join("");}
+const questionHindi={
+"Speech in noise":["शोर में वाणी समझना","कई लोगों के बोलने या शोर वाले कमरे में बातचीत समझने में कठिनाई।"],
+"Following instructions":["निर्देशों का पालन","बोले गए निर्देश दोहराने, सरल करने या चरणों में बताने की ज़रूरत।"],
+"Auditory attention":["श्रवण ध्यान","रोज़मर्रा की आवाज़ें सुनने के बावजूद बोली गई जानकारी पर प्रतिक्रिया न देना।"],
+"Auditory memory":["श्रवण स्मृति","बोले गए निर्देश या जानकारी का क्रम भूल जाना।"],
+"Sound discrimination":["ध्वनि में अंतर पहचानना","मिलते-जुलते सुनाई देने वाले शब्दों या वाणी ध्वनियों में भ्रम।"],
+"Auditory sequencing":["श्रवण क्रमबद्धता","ध्वनियों, शब्दों या बोली गई जानकारी का क्रम याद रखने में कठिनाई।"],
+"Localization":["ध्वनि का स्थान पहचानना","आवाज़ या वक्ता किस दिशा से आ रहा है, यह पहचानने में कठिनाई।"],
+"Classroom / learning":["कक्षा / सीखना","सुनने की समस्या से कक्षा में सीखने, पढ़ने या भाग लेने पर प्रभाव।"],
+"Rapid / unclear speech":["तेज़ / अस्पष्ट वाणी","तेज़, अपरिचित या अस्पष्ट वाणी समझने में अधिक कठिनाई।"],
+"Cross-setting impact":["अलग-अलग परिस्थितियों में प्रभाव","एक से अधिक परिस्थितियों में कठिनाई की सूचना।"],
+"Competing speech":["एक साथ बोलने वाले वक्ता","जब दूसरा व्यक्ति भी बोल रहा हो, तब एक वक्ता को समझने में कठिनाई।"],
+"Rapid speech":["तेज़ वाणी","तेज़ बोलने या लंबी मौखिक व्याख्या के दौरान बात छूट जाना।"],
+"Telephone listening":["फोन पर सुनना","फोन पर वाणी समझने में असामान्य रूप से अधिक कठिनाई।"],
+"Listening effort":["सुनने में प्रयास","समूह में सुनने में बहुत प्रयास लगना और थकान होना।"],
+"Functional impact":["दैनिक जीवन पर प्रभाव","सुनने की कठिनाई से काम, पढ़ाई, रिश्तों या रोज़मर्रा के जीवन पर असर।"]
+};
+function renderQ(){
+ const qs=path()==="child"?childQ:adultQ,container=document.getElementById("questions");
+ const prior=[...container.querySelectorAll("select")].map(s=>s.value);
+ container.innerHTML=qs.map((q,i)=>{const title=uiLanguage==="hi"&&questionHindi[q[0]]?questionHindi[q[0]][0]:q[0],desc=uiLanguage==="hi"&&questionHindi[q[0]]?questionHindi[q[0]][1]:q[1];
+ const opts=[["Not answered","उत्तर नहीं दिया"],["Never / rarely","कभी नहीं / बहुत कम"],["Sometimes","कभी-कभी"],["Often","अक्सर"],["Unable to judge","आकलन नहीं कर सकते"]];
+ return '<div class="qrow"><label for="q'+i+'"><b>'+(i+1)+'. '+esc(title)+'</b><br>'+esc(desc)+'</label><select id="q'+i+'" data-domain="'+esc(q[0])+'">'+opts.map((o,j)=>'<option value="'+esc(o[0])+'" '+((prior[i]||"Not answered")===o[0]?'selected':'')+'>'+esc(uiLanguage==="hi"?o[1]:o[0])+'</option>').join("")+'</select></div>';}).join("");
+}
 function addRow(d="",t="",c="",r="",z="",n=""){let tr=document.createElement("tr");tr.innerHTML='<td><select class="tdomain"><option value="">Select domain</option>'+domains.map(x=>'<option '+(x===d?'selected':'')+'>'+esc(x)+'</option>').join("")+'</select></td><td><input class="ttest" value="'+esc(t)+'" placeholder="Test name"></td><td><input class="tcond" value="'+esc(c)+'" placeholder="Ear / condition"></td><td><input class="traw" value="'+esc(r)+'" placeholder="Score"></td><td><input class="tz" type="number" step=".1" value="'+esc(z)+'" placeholder="e.g. -2.1"></td><td><input class="tnorm" value="'+esc(n)+'" placeholder="Age norm / notes"></td>';document.querySelector("#tests tbody").appendChild(tr);}
 function central(){return [...document.querySelectorAll("#tests tbody tr")].map(tr=>({domain:tr.querySelector(".tdomain").value,test:tr.querySelector(".ttest").value,condition:tr.querySelector(".tcond").value,raw:tr.querySelector(".traw").value,z:tr.querySelector(".tz").value,norm:tr.querySelector(".tnorm").value})).filter(x=>x.domain||x.test||x.raw||x.z||x.norm);}
 function data(){return {patient:{code:v("code"),name:v("name"),age:v("age"),date:v("date"),clinician:v("clinician"),pathway:path(),respondent:v("respondent"),language:v("language")},history:{onset:v("onset"),course:v("course"),complaint:v("complaint"),domains:checks("historyChecks"),development:v("development"),other:v("otherHistory"),safety:{sudden:document.getElementById("flagSudden").checked,neurological:document.getElementById("flagNeuro").checked,asymmetry:document.getElementById("flagAsym").checked,acuteOtologic:document.getElementById("flagPain").checked}},screening:{setting:v("setting"),impact:v("impact"),responses:[...document.querySelectorAll("#questions select")].map(s=>({domain:s.dataset.domain,response:s.value})),indianTool:v("indianTool"),toolSuitability:v("toolSuitability"),indianScore:v("indianScore"),indianInterpretation:v("indianInterpretation"),indianLanguage:v("indianLanguage"),indianRespondent:v("indianRespondent"),standardTool:v("tool"),officialScore:v("toolScore")},bmqr:bmqrSummary(),peripheral:{otoscopy:v("otoscopy"),tympanometry:v("tymp"),hearingSummary:v("hearing"),rightPTA:v("ptaR"),leftPTA:v("ptaL"),PTAFrequencies:v("ptaFreq"),speechRight:v("speechR"),speechLeft:v("speechL"),speechInNoise:v("sin"),reflexes:v("reflex"),OAE:v("oae"),ABR:v("abr"),notes:v("perNotes")},central:{tests:central(),notes:v("centralNotes")},differential:checks("diffs"),furtherAssessments:checks("assess"),management:checks("management"),impression:v("impression"),followup:v("followup"),planNotes:v("planNotes")};}
@@ -130,6 +153,7 @@ document.getElementById("download").onclick=()=>download("CAPD_Report_"+(v("code
 let uiLanguage="en";
 const hindiText={
 "Case history · functional listening screening · audiology test entry · differential considerations · management plan · downloadable report":"केस इतिहास · सुनने की कार्यात्मक स्क्रीनिंग · ऑडियोलॉजी परीक्षण · विभेदक विचार · प्रबंधन योजना · डाउनलोड करने योग्य रिपोर्ट",
+"CAPD Clinical Decision-Support":"CAPD नैदानिक निर्णय-सहायता",
 "1. Patient & history":"1. रोगी और इतिहास","2. Screening":"2. स्क्रीनिंग","3. Peripheral tests":"3. परिधीय परीक्षण","4. Central tests":"4. केंद्रीय श्रवण परीक्षण","5. Differential & plan":"5. विभेदक विचार और योजना","6. Report":"6. रिपोर्ट",
 "Clinical-use limitation:":"नैदानिक उपयोग की सीमा:","This is an offline workflow prototype, not a validated medical device or diagnostic algorithm. It does not diagnose CAPD. Sudden hearing loss or acute neurological symptoms require urgent medical assessment.":"यह ऑफलाइन कार्यप्रवाह का प्रारूप है, मान्य चिकित्सा उपकरण या निदान एल्गोरिदम नहीं। यह CAPD का निदान नहीं करता। अचानक सुनाई कम देना या तंत्रिका संबंधी तीव्र लक्षण होने पर तुरंत चिकित्सकीय जाँच कराएँ।",
 "Patient and case history":"रोगी और केस इतिहास","Use a local patient code where possible. Data stays in this browser session unless you download it; this page does not send data to a server.":"जहाँ संभव हो, स्थानीय रोगी कोड का उपयोग करें। डाउनलोड न करने तक डेटा इसी ब्राउज़र सत्र में रहता है; यह पेज डेटा सर्वर पर नहीं भेजता।",
