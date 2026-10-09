@@ -33,6 +33,29 @@
 <div class="field"><label>Respondent / administrator</label><input id="indianRespondent" placeholder="Self / family / teacher; clinician"></div>
 </div>
 </fieldset>
+<fieldset><legend>Buffalo Model Questionnaire–Revised (BMQ-R)</legend>
+<p>The BMQ-R is a 48-characteristic screening questionnaire completed by the patient, parent or teacher. Use the official form and manual linked below; this app does not reproduce the copyrighted item text. The form and manual are free to download and use in practice; the official interactive scoring tool is an EAA member benefit.</p>
+<p><a href="https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20form%209-2020.pdf" target="_blank" rel="noopener">Open official BMQ-R form (PDF)</a> · <a href="https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20Manual%209-2020%20Update.pdf" target="_blank" rel="noopener">Open administration and interpretation manual (PDF)</a> · <a href="https://www.edaud.org/bmqr" target="_blank" rel="noopener">Official EAA information page</a></p>
+<div class="callout warn"><b>Important:</b> BMQ-R is not India-specific and is not a diagnostic test. Use the manual, consider age, grade, respondent, language comprehension and prior therapies, and interpret alongside history and formal audiological testing. Its published manual describes age bands of under 6, 6–18, and over 18 years. Do not treat this as validated in Hindi, Punjabi or other Indian languages unless a validated version is available.</div>
+<div class="grid two">
+<div class="field"><label>BMQ-R respondent</label><select id="bmqrRespondent"><option>Not recorded</option><option>Patient / self-report</option><option>Parent / caregiver</option><option>Teacher</option><option>Parent and teacher</option><option>Other / multiple informants</option></select></div>
+<div class="field"><label>Questionnaire language / version</label><input id="bmqrLanguage" placeholder="Record the version and language actually used"></div>
+<div class="field"><label>Age band per BMQ-R manual</label><select id="bmqrAgeBand"><option>Not recorded</option><option>Under 6 years</option><option>6–18 years</option><option>Over 18 years</option></select></div>
+<div class="field"><label>Grade / educational context</label><input id="bmqrGrade" placeholder="Grade, occupation or context"></div>
+</div>
+<h3>Enter category totals from the completed official form</h3>
+<p class="help">Enter counts of “Yes” responses and “NA” responses. TFM combines its Noise, Memory and Various subcategories. ΣCAP includes DEC + TFM + INT + ORG + APD; GEN is excluded. The calculator checks count ranges and adjusts the ΣCAP denominator for applicable NA responses.</p>
+<div style="overflow-x:auto"><table id="bmqrTable"><thead><tr><th>Category</th><th>Maximum items</th><th>Yes count</th><th>NA count</th></tr></thead><tbody>
+<tr data-bmq="DEC" data-max="9"><td>DEC — Decoding</td><td>9</td><td><input type="number" id="bmqr_DEC" min="0" max="9" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_DEC_NA" min="0" max="9" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="TFM" data-max="14"><td>TFM — Tolerance/Fading Memory</td><td>14</td><td><input type="number" id="bmqr_TFM" min="0" max="14" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_TFM_NA" min="0" max="14" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="INT" data-max="6"><td>INT — Integration</td><td>6</td><td><input type="number" id="bmqr_INT" min="0" max="6" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_INT_NA" min="0" max="6" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="ORG" data-max="3"><td>ORG — Organization</td><td>3</td><td><input type="number" id="bmqr_ORG" min="0" max="3" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_ORG_NA" min="0" max="3" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="APD" data-max="7"><td>APD — General APD characteristics</td><td>7</td><td><input type="number" id="bmqr_APD" min="0" max="7" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_APD_NA" min="0" max="7" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="GEN" data-max="9"><td>GEN — General (excluded from ΣCAP)</td><td>9</td><td><input type="number" id="bmqr_GEN" min="0" max="9" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_GEN_NA" min="0" max="9" step="1" placeholder="NA"></td></tr>
+</tbody></table></div>
+<div class="callout" id="bmqrResult" aria-live="polite">Enter category counts transcribed from the official form to calculate a descriptive BMQ-R summary.</div>
+<div class="field"><label>Prior therapies / years, comments and scoring notes</label><textarea id="bmqrNotes" placeholder="Record relevant therapies and any scoring/interpretation notes from the manual."></textarea></div>
+</fieldset>
 <h3>Supplementary functional listening history (non-validated)</h3>
 <p class="help">The prompts below are original, non-standardized history questions only. They must not be labelled as SCAP, SCAP-A or STAP, and they have no diagnostic cut-off.</p>
 <div id="questions"></div>
