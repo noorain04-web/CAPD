@@ -47,3 +47,9 @@ The screening page includes a BMQ-R workflow with links to the official [questio
 The app calculates ΣCAP from DEC + TFM + INT + ORG + APD, excludes GEN, adjusts the denominator for applicable NA responses, and displays a prompt for further APD testing when ΣCAP is 8 or more as described in the official manual. This is a screening prompt only—not a diagnosis or a substitute for professional interpretation. The manual identifies age groups under 6, 6–18 and over 18 years and notes the relevance of educational exposure, respondent and prior therapies. Use the official manual to verify all entries and interpretation.
 
 BMQ-R is not an India-specific instrument. Do not imply that its English-language results are validated for Hindi, Punjabi or other Indian languages without evidence of an appropriate validated version. The app's custom symptom prompts remain separate and explicitly non-validated.
+
+## Hindi / English interface
+
+The interface now has a **“हिन्दी में देखें / View in English”** toggle. Core navigation, patient-history fields, screening guidance, several test labels, BMQ-R instructions and the original supplementary listening prompts have Hindi translations. Switching languages preserves the responses to the custom screening questions.
+
+**Important language limitation:** this is a Hindi interface translation, not a validated Hindi version of BMQ-R, SCAP, SCAP-A or STAP. Standardized questionnaires must be administered in an authorised, validated language/version and scored using their official instructions. The downloadable clinical report remains English at this stage; do not treat translated interface wording as validated test material.
