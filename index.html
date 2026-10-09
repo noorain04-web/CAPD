@@ -46,12 +46,12 @@
 <h3>Enter category totals from the completed official form</h3>
 <p class="help">Enter counts of “Yes” responses and “NA” responses. TFM combines its Noise, Memory and Various subcategories. ΣCAP includes DEC + TFM + INT + ORG + APD; GEN is excluded. The calculator checks count ranges and adjusts the ΣCAP denominator for applicable NA responses.</p>
 <div style="overflow-x:auto"><table id="bmqrTable"><thead><tr><th>Category</th><th>Maximum items</th><th>Yes count</th><th>NA count</th></tr></thead><tbody>
-<tr data-bmq="DEC" data-max="9"><td>DEC — Decoding</td><td>9</td><td><input type="number" id="bmqr_DEC" min="0" max="9" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_DEC_NA" min="0" max="9" step="1" placeholder="NA"></td></tr>
-<tr data-bmq="TFM" data-max="14"><td>TFM — Tolerance/Fading Memory</td><td>14</td><td><input type="number" id="bmqr_TFM" min="0" max="14" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_TFM_NA" min="0" max="14" step="1" placeholder="NA"></td></tr>
-<tr data-bmq="INT" data-max="6"><td>INT — Integration</td><td>6</td><td><input type="number" id="bmqr_INT" min="0" max="6" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_INT_NA" min="0" max="6" step="1" placeholder="NA"></td></tr>
-<tr data-bmq="ORG" data-max="3"><td>ORG — Organization</td><td>3</td><td><input type="number" id="bmqr_ORG" min="0" max="3" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_ORG_NA" min="0" max="3" step="1" placeholder="NA"></td></tr>
-<tr data-bmq="APD" data-max="7"><td>APD — General APD characteristics</td><td>7</td><td><input type="number" id="bmqr_APD" min="0" max="7" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_APD_NA" min="0" max="7" step="1" placeholder="NA"></td></tr>
-<tr data-bmq="GEN" data-max="9"><td>GEN — General (excluded from ΣCAP)</td><td>9</td><td><input type="number" id="bmqr_GEN" min="0" max="9" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_GEN_NA" min="0" max="9" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="DEC" data-max="9"><td>DEC — Decoding</td><td>9</td><td><input type="number" id="bmqr_DEC" min="0" max="9" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_DEC_NA" min="0" max="4" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="TFM" data-max="14"><td>TFM — Tolerance/Fading Memory</td><td>14</td><td><input type="number" id="bmqr_TFM" min="0" max="14" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_TFM_NA" min="0" max="0" step="1" value="0" placeholder="NA"></td></tr>
+<tr data-bmq="INT" data-max="6"><td>INT — Integration</td><td>6</td><td><input type="number" id="bmqr_INT" min="0" max="6" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_INT_NA" min="0" max="2" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="ORG" data-max="3"><td>ORG — Organization</td><td>3</td><td><input type="number" id="bmqr_ORG" min="0" max="3" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_ORG_NA" min="0" max="0" step="1" value="0" placeholder="NA"></td></tr>
+<tr data-bmq="APD" data-max="7"><td>APD — General APD characteristics</td><td>7</td><td><input type="number" id="bmqr_APD" min="0" max="7" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_APD_NA" min="0" max="1" step="1" placeholder="NA"></td></tr>
+<tr data-bmq="GEN" data-max="9"><td>GEN — General (excluded from ΣCAP)</td><td>9</td><td><input type="number" id="bmqr_GEN" min="0" max="9" step="1" placeholder="Y"></td><td><input type="number" id="bmqr_GEN_NA" min="0" max="1" step="1" placeholder="NA"></td></tr>
 </tbody></table></div>
 <div class="callout" id="bmqrResult" aria-live="polite">Enter category counts transcribed from the official form to calculate a descriptive BMQ-R summary.</div>
 <div class="field"><label>Prior therapies / years, comments and scoring notes</label><textarea id="bmqrNotes" placeholder="Record relevant therapies and any scoring/interpretation notes from the manual."></textarea></div>
@@ -87,14 +87,14 @@ function addRow(d="",t="",c="",r="",z="",n=""){let tr=document.createElement("tr
 function central(){return [...document.querySelectorAll("#tests tbody tr")].map(tr=>({domain:tr.querySelector(".tdomain").value,test:tr.querySelector(".ttest").value,condition:tr.querySelector(".tcond").value,raw:tr.querySelector(".traw").value,z:tr.querySelector(".tz").value,norm:tr.querySelector(".tnorm").value})).filter(x=>x.domain||x.test||x.raw||x.z||x.norm);}
 function data(){return {patient:{code:v("code"),name:v("name"),age:v("age"),date:v("date"),clinician:v("clinician"),pathway:path(),respondent:v("respondent"),language:v("language")},history:{onset:v("onset"),course:v("course"),complaint:v("complaint"),domains:checks("historyChecks"),development:v("development"),other:v("otherHistory"),safety:{sudden:document.getElementById("flagSudden").checked,neurological:document.getElementById("flagNeuro").checked,asymmetry:document.getElementById("flagAsym").checked,acuteOtologic:document.getElementById("flagPain").checked}},screening:{setting:v("setting"),impact:v("impact"),responses:[...document.querySelectorAll("#questions select")].map(s=>({domain:s.dataset.domain,response:s.value})),indianTool:v("indianTool"),toolSuitability:v("toolSuitability"),indianScore:v("indianScore"),indianInterpretation:v("indianInterpretation"),indianLanguage:v("indianLanguage"),indianRespondent:v("indianRespondent"),standardTool:v("tool"),officialScore:v("toolScore")},bmqr:bmqrSummary(),peripheral:{otoscopy:v("otoscopy"),tympanometry:v("tymp"),hearingSummary:v("hearing"),rightPTA:v("ptaR"),leftPTA:v("ptaL"),PTAFrequencies:v("ptaFreq"),speechRight:v("speechR"),speechLeft:v("speechL"),speechInNoise:v("sin"),reflexes:v("reflex"),OAE:v("oae"),ABR:v("abr"),notes:v("perNotes")},central:{tests:central(),notes:v("centralNotes")},differential:checks("diffs"),furtherAssessments:checks("assess"),management:checks("management"),impression:v("impression"),followup:v("followup"),planNotes:v("planNotes")};}
 function bmqrSummary(){
- const specs=[["DEC",9],["TFM",14],["INT",6],["ORG",3],["APD",7],["GEN",9]];
+ const specs=[["DEC",9,4],["TFM",14,0],["INT",6,2],["ORG",3,0],["APD",7,1],["GEN",9,1]];
  const vals={};let invalid=[];
- for(const [k,max] of specs){
+ for(const [k,max,naMax] of specs){
   const ys=document.getElementById("bmqr_"+k),nas=document.getElementById("bmqr_"+k+"_NA");
   const y=ys&&ys.value!==""?Number(ys.value):null,na=nas&&nas.value!==""?Number(nas.value):0;
-  vals[k]={yes:y,na:na,max:max};
+  vals[k]={yes:y,na:na,max:max,naMax:naMax};
   if(y!==null&&(!Number.isInteger(y)||y<0||y>max))invalid.push(k+" Yes count is outside its valid range");
-  if(!Number.isInteger(na)||na<0||na>max)invalid.push(k+" NA count is outside its valid range");
+  if(!Number.isInteger(na)||na<0||na>naMax)invalid.push(k+" NA count is outside its valid range (maximum "+naMax+")");
   if(y!==null&&y+na>max)invalid.push(k+" Yes + NA exceeds available items");
  }
  const core=["DEC","TFM","INT","ORG","APD"],complete=core.every(k=>vals[k].yes!==null),valid=invalid.length===0;
@@ -102,7 +102,7 @@ function bmqrSummary(){
  const naSum=core.reduce((n,k)=>n+vals[k].na,0),denom=39-naSum;
  let status="Enter Yes counts for DEC, TFM, INT, ORG and APD to calculate ΣCAP.";
  if(!valid)status="Check counts: "+invalid.join("; ")+".";
- else if(complete)status="ΣCAP: "+ysum+" / "+denom+" available items"+(ysum>=8+". "?"":". ")+(ysum>=8?"The BMQ-R manual suggests further APD testing when ΣCAP is 8 or more.":"Below the manual's 8-point referral prompt; this does not rule out APD when concerns persist.");
+ else if(complete)status="ΣCAP: "+ysum+" / "+denom+" available items. "+(ysum>=8?"The BMQ-R manual suggests further APD testing when ΣCAP is 8 or more.":"Below the manual 8-point referral prompt; this does not rule out APD when concerns persist.");
  const result=document.getElementById("bmqrResult");
  if(result)result.innerHTML=esc(status)+"<br><span class='small'>GEN responses are excluded from ΣCAP. This is a manual-based screening prompt, not a diagnosis; review official instructions and clinical context.</span>";
  return {respondent:v("bmqrRespondent"),language:v("bmqrLanguage"),ageBand:v("bmqrAgeBand"),grade:v("bmqrGrade"),categories:vals,complete:complete,valid:valid,validationErrors:invalid,sigmaCAP:ysum,sigmaCAPDenominator:denom,manualReferralPrompt:valid&&complete?ysum>=8:null,notes:v("bmqrNotes")};
