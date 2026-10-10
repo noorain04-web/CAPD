@@ -78,7 +78,7 @@
 <div class="field"><label for="stimulusNotes">Administration notes, device, headphones, environment, reliability</label><textarea id="stimulusNotes" placeholder="Record phone model, transducer, channel check, noise and any deviations."></textarea></div>
 <div class="actions"><button type="button" class="btn secondary" id="recordStimulusResponse">Save observation to case</button></div>
 <p class="small" id="stimulusStatus" aria-live="polite">No stimulus played yet. Generated stimuli are examples only; they are not official test items.</p>
-<div style="overflow-x:auto"><table id="stimulusRecords"><thead><tr><th>Task</th><th>Stimulus / condition</th><th>Response</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+<p class="small"><b>Reference resources:</b> <a href="https://www.asha.org/practice-portal/clinical-topics/central-auditory-processing-disorder/" target="_blank" rel="noopener">ASHA CAPD assessment guidance</a> · <a href="https://www.ncrar.research.va.gov/CAPDWG/CAPDTestMeasures.asp" target="_blank" rel="noopener">NCRAR overview of test measures</a> · <a href="https://github.com/kelokko/ear-sync" target="_blank" rel="noopener">EarSync GitHub (temporal-processing training/demo, not diagnosis)</a> · <a href="https://github.com/ChaitLabUCL/HeadphoneCheck_Test" target="_blank" rel="noopener">HeadphoneCheck GitHub (channel/headphone research task, not CAPD test)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10783812/" target="_blank" rel="noopener">Tablet-based CAP assessment research</a>.</p><div style="overflow-x:auto"><table id="stimulusRecords"><thead><tr><th>Task</th><th>Stimulus / condition</th><th>Response</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
 </fieldset>
 <div style="overflow-x:auto"><table id="tests"><thead><tr><th>Domain</th><th>Test / measure</th><th>Condition / ear</th><th>Raw result</th><th>Z-score</th><th>Norm / notes</th></tr></thead><tbody></tbody></table></div><div class="actions"><button class="btn secondary" id="addTest">+ Add test</button><button class="btn secondary" id="resetTests">Reset rows</button></div><div class="field"><label>Clinical interpretation, reliability and behavioural observations</label><textarea id="centralNotes"></textarea></div><div class="actions"><button class="btn secondary" data-prev="peripheral">← Back</button><button class="btn" data-next="plan">Continue →</button></div></section>
 <section class="panel" id="plan"><h2>Differential diagnosis and management plan</h2><p class="help">Select hypotheses supported by history or findings; these are not automated diagnoses. Conditions may co-occur with CAPD.</p>
@@ -159,6 +159,8 @@ hi:["केवल चिकित्सक द्वारा चुने ग�
 pa:["ਸਿਰਫ਼ ਕਲੀਨੀਸ਼ਨ ਵੱਲੋਂ ਚੁਣੇ ਅਧਿਕਾਰਤ ਸਟਿਮੁਲਸ ਵਰਤੋ ਜਿਨ੍ਹਾਂ ਦਾ ਸੰਸਕਰਣ ਅਤੇ ਸਕੋਰਿੰਗ ਹਦਾਇਤਾਂ ਦਰਜ ਹੋਣ।","ਅਧਿਕਾਰਤ ਫ਼ਾਈਲ ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਲੋਡ ਕਰੋ ਅਤੇ ਮੈਨੂਅਲ ਦੀ ਪਾਲਣਾ ਕਰੋ। ਜੇ ਪ੍ਰਮਾਣਿਤ ਮੈਨੂਅਲ/ਨਾਰਮ ਨਹੀਂ ਹਨ ਤਾਂ ਸਿਰਫ਼ ਗੁਣਾਤਮਕ ਨਿਰੀਖਣ ਦਰਜ ਕਰੋ।","ਫ਼ੋਨ ਦੀ ਉਪਯੋਗਤਾ ਟੈਸਟ ਅਤੇ ਪ੍ਰਮਾਣਿਤ, ਕੈਲੀਬਰੇਟ ਕੀਤੇ ਸੈੱਟਅੱਪ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ।"]}
 };
 function stimulusLang(){return uiLanguage==="hi"?"hi":uiLanguage==="pa"?"pa":"en";}
+function stimMsg(en,hi,pa){return uiLanguage==="hi"?hi:uiLanguage==="pa"?pa:en;}
+
 function renderStimulusGuide(){
  const key=document.getElementById("stimulusType").value,lang=stimulusLang(),g=stimulusGuideText[key][lang]||stimulusGuideText[key].en;
  document.getElementById("stimulusGuide").innerHTML="<b>"+esc(g[0])+"</b><p>"+esc(g[1])+"</p><p>"+esc(g[2])+"</p>";
@@ -175,7 +177,7 @@ function stopStimulusAudio(){
 function playGeneratedStimulus(type){
  stopStimulusAudio();
  const AC=window.AudioContext||window.webkitAudioContext;
- if(!AC){document.getElementById("stimulusStatus").textContent="Web Audio is not supported in this browser.";return;}
+ if(!AC){document.getElementById("stimulusStatus").textContent=stimMsg("Web Audio is not supported in this browser.","इस ब्राउज़र में Web Audio समर्थित नहीं है।","ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ Web Audio ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।");return;}
  const ctx=stimulusAudioContext=new AC(),start=ctx.currentTime+0.12;
  const nodes=[];
  function tone(freq,at,dur,pan=0){
@@ -205,7 +207,7 @@ function playGeneratedStimulus(type){
  }
  stimulusNodes=nodes;currentStimulusMeta={type,descriptor,playedAt:new Date().toISOString(),source:"app-generated pilot stimulus"};
  document.getElementById("stimulusCondition").value=descriptor;
- document.getElementById("stimulusStatus").textContent="Pilot stimulus played. Enter the participant's response and save the observation. This is not a clinical score.";
+ document.getElementById("stimulusStatus").textContent=stimMsg("Pilot stimulus played. Enter the participant's response and save the observation. This is not a clinical score.","पायलट स्टिम्युलस चल गया। प्रतिभागी का उत्तर दर्ज करके अवलोकन सहेजें। यह क्लिनिकल स्कोर नहीं है।","ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਚੱਲ ਗਿਆ। ਭਾਗੀਦਾਰ ਦਾ ਜਵਾਬ ਦਰਜ ਕਰਕੇ ਨਿਰੀਖਣ ਸੰਭਾਲੋ। ਇਹ ਕਲੀਨੀਕਲ ਸਕੋਰ ਨਹੀਂ ਹੈ।");
  ctx.resume().catch(()=>{});
 }
 function stimulusDomain(type){
@@ -217,7 +219,7 @@ function renderStimulusRecords(){
 }
 document.getElementById("stimulusType").addEventListener("change",renderStimulusGuide);
 document.getElementById("generateStimulus").addEventListener("click",()=>playGeneratedStimulus(document.getElementById("stimulusType").value));
-document.getElementById("stopStimulus").addEventListener("click",()=>{stopStimulusAudio();document.getElementById("stimulusStatus").textContent=uiLanguage==="hi"?"ऑडियो रोक दिया गया।":uiLanguage==="pa"?"ਆਡੀਓ ਰੋਕ ਦਿੱਤਾ ਗਿਆ।":"Audio stopped.";});
+document.getElementById("stopStimulus").addEventListener("click",()=>{stopStimulusAudio();document.getElementById("stimulusStatus").textContent=stimMsg("Audio stopped.","ऑडियो रोक दिया गया।","ਆਡੀਓ ਰੋਕ ਦਿੱਤਾ ਗਿਆ।");});
 document.getElementById("stimulusFile").addEventListener("change",e=>{
  const file=e.target.files&&e.target.files[0];if(!file)return;
  if(uploadedAudioUrl)URL.revokeObjectURL(uploadedAudioUrl);
@@ -227,16 +229,16 @@ document.getElementById("stimulusFile").addEventListener("change",e=>{
  document.getElementById("stimulusCondition").value="Local audio file: "+file.name;
 });
 document.getElementById("playUploadedStimulus").addEventListener("click",()=>{
- if(!uploadedAudio){document.getElementById("stimulusStatus").textContent=uiLanguage==="hi"?"पहले स्थानीय ऑडियो फ़ाइल चुनें।":uiLanguage==="pa"?"ਪਹਿਲਾਂ ਸਥਾਨਕ ਆਡੀਓ ਫ਼ਾਈਲ ਚੁਣੋ।":"Select a local audio file first.";return;}
- stopStimulusAudio();uploadedAudio.play().then(()=>{currentStimulusMeta={type:document.getElementById("stimulusType").value,descriptor:"Local file: "+(document.getElementById("stimulusFile").files[0]?.name||"audio"),playedAt:new Date().toISOString(),source:"clinician-provided local audio"};document.getElementById("stimulusStatus").textContent="Local audio playing. Follow the authorised test manual; this app does not standardize or score the recording.";}).catch(()=>{document.getElementById("stimulusStatus").textContent="Audio playback was blocked. Tap Play selected audio again.";});
+ if(!uploadedAudio){document.getElementById("stimulusStatus").textContent=stimMsg("Select a local audio file first.","पहले स्थानीय ऑडियो फ़ाइल चुनें।","ਪਹਿਲਾਂ ਸਥਾਨਕ ਆਡੀਓ ਫ਼ਾਈਲ ਚੁਣੋ।");return;}
+ stopStimulusAudio();uploadedAudio.play().then(()=>{currentStimulusMeta={type:document.getElementById("stimulusType").value,descriptor:"Local file: "+(document.getElementById("stimulusFile").files[0]?.name||"audio"),playedAt:new Date().toISOString(),source:"clinician-provided local audio"};document.getElementById("stimulusStatus").textContent=stimMsg("Local audio playing. Follow the authorised test manual; this app does not standardize or score the recording.","स्थानीय ऑडियो चल रहा है। अधिकृत परीक्षण मैनुअल का पालन करें; ऐप रिकॉर्डिंग को मानकीकृत या स्कोर नहीं करता।","ਸਥਾਨਕ ਆਡੀਓ ਚੱਲ ਰਿਹਾ ਹੈ। ਅਧਿਕਾਰਤ ਟੈਸਟ ਮੈਨੂਅਲ ਦੀ ਪਾਲਣਾ ਕਰੋ; ਇਹ ਐਪ ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਮਿਆਰੀ ਜਾਂ ਸਕੋਰ ਨਹੀਂ ਕਰਦੀ।");}).catch(()=>{document.getElementById("stimulusStatus").textContent=stimMsg("Audio playback was blocked. Tap Play selected audio again.","ऑडियो प्लेबैक रुक गया। फिर से ‘चुना हुआ ऑडियो चलाएँ’ दबाएँ।","ਆਡੀਓ ਪਲੇਬੈਕ ਰੁਕ ਗਿਆ। ਮੁੜ ‘ਚੁਣਿਆ ਆਡੀਓ ਚਲਾਓ’ ਦਬਾਓ।");});
 });
 document.getElementById("recordStimulusResponse").addEventListener("click",()=>{
- if(!currentStimulusMeta){document.getElementById("stimulusStatus").textContent="Play a generated stimulus or local audio file before saving a response.";return;}
+ if(!currentStimulusMeta){document.getElementById("stimulusStatus").textContent=stimMsg("Play a generated stimulus or local audio file before saving a response.","उत्तर सहेजने से पहले पायलट स्टिम्युलस या स्थानीय ऑडियो चलाएँ।","ਜਵਾਬ ਸੰਭਾਲਣ ਤੋਂ ਪਹਿਲਾਂ ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਜਾਂ ਸਥਾਨਕ ਆਡੀਓ ਚਲਾਓ।");return;}
  const type=document.getElementById("stimulusType").value,domain=stimulusDomain(type),response=document.getElementById("stimulusResponse").value.trim(),condition=document.getElementById("stimulusCondition").value.trim()||currentStimulusMeta.descriptor,notes=document.getElementById("stimulusNotes").value.trim();
  const rec={task:domain,stimulus:condition,response,notes,source:currentStimulusMeta.source,playedAt:currentStimulusMeta.playedAt,language:stimulusLang(),status:"descriptive observation only; no clinical norms"};
  phoneStimulusRecords.push(rec);renderStimulusRecords();
  addRow(domain,"Phone stimulus lab — pilot / uploaded audio",condition,response,"","No validated norms; descriptive only. Device/transducer calibration not established.");
- document.getElementById("stimulusStatus").textContent="Observation saved to this case. It is descriptive only and does not establish or exclude CAPD.";
+ document.getElementById("stimulusStatus").textContent=stimMsg("Observation saved to this case. It is descriptive only and does not establish or exclude CAPD.","अवलोकन इस केस में सहेजा गया। यह केवल वर्णनात्मक है और CAPD की पुष्टि या खंडन नहीं करता।","ਨਿਰੀਖਣ ਇਸ ਕੇਸ ਵਿੱਚ ਸੰਭਾਲਿਆ ਗਿਆ। ਇਹ ਸਿਰਫ਼ ਵਰਣਨਾਤਮਕ ਹੈ ਅਤੇ CAPD ਦੀ ਪੁਸ਼ਟੀ ਜਾਂ ਇਨਕਾਰ ਨਹੀਂ ਕਰਦਾ।");
  document.getElementById("stimulusResponse").value="";
 });
 renderStimulusGuide();
