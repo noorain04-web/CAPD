@@ -259,13 +259,22 @@ const questionPunjabi={
 "Functional impact":["ਰੋਜ਼ਾਨਾ ਜੀਵਨ 'ਤੇ ਅਸਰ","ਸੁਣਨ ਦੀਆਂ ਮੁਸ਼ਕਲਾਂ ਦਾ ਕੰਮ, ਪੜ੍ਹਾਈ, ਰਿਸ਼ਤਿਆਂ ਜਾਂ ਰੋਜ਼ਾਨਾ ਜੀਵਨ 'ਤੇ ਅਸਰ।"]
 };
 
+const originalTextNodes=new WeakMap();
+const originalAttributeValues=new WeakMap();
+function restoreLocalizedDOM(){
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ while(walker.nextNode()){const n=walker.currentNode;if(originalTextNodes.has(n))n.nodeValue=originalTextNodes.get(n);}
+ document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{if(el.dataset.enPlaceholder)el.placeholder=el.dataset.enPlaceholder;});
+ document.querySelectorAll("option").forEach(el=>{if(el.dataset.enOption)el.textContent=el.dataset.enOption;});
+ document.querySelectorAll("[title],[aria-label]").forEach(el=>{const saved=originalAttributeValues.get(el);if(saved)Object.keys(saved).forEach(attr=>el.setAttribute(attr,saved[attr]));});
+}
 function applyDictionaryToDOM(dict){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  while(walker.nextNode()){
   const n=walker.currentNode;
   if(n.parentElement&&n.parentElement.closest("script,style"))continue;
-  if(!n.dataset.enText)n.dataset.enText=n.nodeValue;
-  const original=n.dataset.enText,trim=original.trim();
+  if(!originalTextNodes.has(n))originalTextNodes.set(n,n.nodeValue);
+  const original=originalTextNodes.get(n),trim=original.trim();
   n.nodeValue=dict&&dict[trim]?original.replace(trim,dict[trim]):original;
  }
  document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{
@@ -277,26 +286,22 @@ function applyDictionaryToDOM(dict){
   const p=el.dataset.enOption;el.textContent=dict?(dict[p]||p):p;
  });
  document.querySelectorAll("[title],[aria-label]").forEach(el=>{
+  let saved=originalAttributeValues.get(el);
+  if(!saved){saved={};originalAttributeValues.set(el,saved);}
   ["title","aria-label"].forEach(attr=>{
    if(!el.hasAttribute(attr))return;
-   const key="en"+attr.charAt(0).toUpperCase()+attr.slice(1);
-   if(!el.dataset[key])el.dataset[key]=el.getAttribute(attr);
-   const original=el.dataset[key];el.setAttribute(attr,dict?(dict[original]||original):original);
+   if(!(attr in saved))saved[attr]=el.getAttribute(attr);
+   const original=saved[attr];el.setAttribute(attr,dict?(dict[original]||original):original);
   });
  });
 }
 function applyLanguage(lang){
  const dict=lang==="hi"?hindiText:lang==="pa"?punjabiText:null;
- // Restore the stable source text first, so switching between languages never
- // translates a previous translation or leaves mixed-language fragments behind.
- document.querySelectorAll("[data-en-text]").forEach(n=>{n.nodeValue=n.dataset.enText;});
- document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{if(el.dataset.enPlaceholder)el.placeholder=el.dataset.enPlaceholder;});
- document.querySelectorAll("option").forEach(el=>{if(el.dataset.enOption)el.textContent=el.dataset.enOption;});
- document.querySelectorAll("[title],[aria-label]").forEach(el=>["title","aria-label"].forEach(attr=>{const key="en"+attr.charAt(0).toUpperCase()+attr.slice(1);if(el.dataset[key])el.setAttribute(attr,el.dataset[key]);}));
+ // Restore source text before rebuilding widgets, preventing mixed-language leftovers.
+ restoreLocalizedDOM();
  uiLanguage=lang;
  document.documentElement.lang=lang==="hi"?"hi":lang==="pa"?"pa":"en";
- // Rebuild language-aware widgets first, then translate the entire visible UI,
- // including newly-created instructions, score summaries, and dynamic controls.
+ // Rebuild language-aware widgets, then translate the full visible interface.
  if(typeof renderQ==="function")renderQ();
  if(typeof bmqrSummary==="function")bmqrSummary();
  if(typeof renderWorkflowGuide==="function")renderWorkflowGuide();
