@@ -71,7 +71,8 @@
 </select></div>
 <div class="field"><label for="stimulusFile">Local audio file (optional; remains on this device)</label><input id="stimulusFile" type="file" accept="audio/*"><p class="small" id="stimulusFileName">No file selected.</p></div>
 <div class="field"><label for="noiseMixLevel">Background noise mix (digital gain only; not calibrated SNR)</label><input id="noiseMixLevel" type="range" min="0" max="100" step="5" value="25"><p class="small"><span id="noiseMixValue">25%</span> digital noise gain for demonstrations only; this is not a dB HL or validated SNR control.</p></div>
-<div class="field" id="spinLanguageWrap" hidden><label for="spinLanguage">SPIN-style practice language</label><select id="spinLanguage"><option value="en">English (India)</option><option value="hi">Hindi</option><option value="pa">Punjabi (Gurmukhi)</option></select><p class="small">Original short sentences, not standardized SPIN/SINCA materials. Spoken playback depends on installed browser voices.</p><button type="button" class="btn secondary" id="revealSpinTarget" hidden>Reveal target after response</button><p id="spinTargetAnswer" class="small" hidden></p></div>
+<div class="field" id="spinLanguageWrap" hidden><label for="spinLanguage">SPIN-style practice language</label><select id="spinLanguage"><option value="en">English (India)</option><option value="hi">Hindi</option><option value="pa">Punjabi (Gurmukhi)</option></select><p class="small">Original short sentences, not standardized SPIN/SINCA materials. Spoken playback depends on installed browser voices.</p><button type="button" class="btn secondary" id="revealSpinTarget" hidden>Reveal answer key after response</button><p id="spinTargetAnswer" class="small" hidden></p></div>
+<div class="field" id="patternEarWrap" hidden><label for="patternEar">Pitch-pattern presentation channel (stereo pilot only)</label><select id="patternEar"><option value="left">Left channel</option><option value="right">Right channel</option></select><p class="small">A 33-sequence FPT-inspired list will play: 3 practice patterns then 30 test patterns, with 6 seconds between patterns. The phone channel is not audiometrically calibrated.</p></div>
 </div>
 <div class="callout" id="stimulusGuide" aria-live="polite"></div>
 <div class="actions"><button type="button" class="btn" id="generateStimulus">Generate and play pilot stimulus</button><button type="button" class="btn secondary" id="playUploadedStimulus">Play selected audio</button><button type="button" class="btn secondary" id="stopStimulus">Stop audio</button><button type="button" class="btn secondary" id="gapHitButton" hidden>I heard a gap</button></div>
@@ -128,7 +129,7 @@ function renderQ(){
 }
 const phoneStimulusRecords=[];
 let uiLanguage="en";
-let stimulusAudioContext=null,stimulusNodes=[],uploadedAudio=null,uploadedAudioUrl=null,currentStimulusMeta=null,stimulusTimers=[],gapTapCount=0,gapProtocolActive=false;
+let stimulusAudioContext=null,stimulusNodes=[],uploadedAudio=null,uploadedAudioUrl=null,currentStimulusMeta=null,stimulusTimers=[],gapTapCount=0,gapProtocolActive=false,patternProtocolDone=false;
 const spinPracticeItems={
  en:[
   {text:"The boy carried a blue bag.",target:"blue bag",code:"EN01"},{text:"A small bird sat on the wall.",target:"small bird",code:"EN02"},{text:"Please bring the green cup.",target:"green cup",code:"EN03"},{text:"The train leaves after noon.",target:"train; noon",code:"EN04"},{text:"Her brother bought fresh apples.",target:"brother; apples",code:"EN05"},{text:"Put the book beside the window.",target:"book; window",code:"EN06"},{text:"The teacher opened the classroom door.",target:"teacher; door",code:"EN07"},{text:"We planted flowers near the gate.",target:"flowers; gate",code:"EN08"},{text:"The bus stopped beside the market.",target:"bus; market",code:"EN09"},{text:"A yellow kite crossed the sky.",target:"yellow kite",code:"EN10"},{text:"The baby slept during the rain.",target:"baby; rain",code:"EN11"},{text:"Keep the keys inside the drawer.",target:"keys; drawer",code:"EN12"},{text:"The farmer watered the young plants.",target:"farmer; plants",code:"EN13"},{text:"The children walked across the bridge.",target:"children; bridge",code:"EN14"},{text:"My uncle repaired the old clock.",target:"uncle; clock",code:"EN15"}],
@@ -193,7 +194,7 @@ binaural:{en:"Added substitute: tone-in-correlated-noise demonstration with tone
 };
 function renderStimulusGuide(){
  const key=document.getElementById("stimulusType").value,lang=stimulusLang(),g=stimulusGuideText[key][lang]||stimulusGuideText[key].en;
- document.getElementById("spinLanguageWrap").hidden=key!=="spin";document.getElementById("revealSpinTarget").hidden=key!=="spin";document.getElementById("spinTargetAnswer").hidden=true;document.getElementById("spinTargetAnswer").textContent="";document.getElementById("gapHitButton").hidden=key!=="gap"||!gapProtocolActive;
+ document.getElementById("spinLanguageWrap").hidden=key!=="spin";document.getElementById("patternEarWrap").hidden=key!=="pattern";document.getElementById("revealSpinTarget").hidden=!(key==="spin"||key==="pattern");document.getElementById("revealSpinTarget").disabled=key==="pattern"&&!patternProtocolDone;document.getElementById("spinTargetAnswer").hidden=true;document.getElementById("spinTargetAnswer").textContent="";document.getElementById("gapHitButton").hidden=key!=="gap"||!gapProtocolActive;
  const supplement=stimulusSubstituteNotes[key];document.getElementById("stimulusGuide").innerHTML="<b>"+esc(g[0])+"</b><p>"+esc(g[1])+"</p><p>"+esc(g[2])+"</p>"+(supplement?"<p><b>"+esc(stimMsg("Phone pilot substitute:", "फोन पायलट विकल्प:", "ਫ਼ੋਨ ਪਾਇਲਟ ਬਦਲ:"))+"</b> "+esc(supplement[lang]||supplement.en)+"</p>":"");
  const canGenerate=["discrimination","pattern","gap","dichotic","speechnoise","spin","localization","binaural"].includes(key);
  document.getElementById("generateStimulus").disabled=!canGenerate;
@@ -201,7 +202,7 @@ function renderStimulusGuide(){
  document.getElementById("noiseMixValue").textContent=document.getElementById("noiseMixLevel").value+"%";
 }
 function stopStimulusAudio(){
- stimulusTimers.forEach(t=>{clearTimeout(t);clearInterval(t);});stimulusTimers=[];gapProtocolActive=false;document.getElementById("gapHitButton").hidden=true;
+ stimulusTimers.forEach(t=>{clearTimeout(t);clearInterval(t);});stimulusTimers=[];gapProtocolActive=false;patternProtocolDone=false;document.getElementById("revealSpinTarget").disabled=document.getElementById("stimulusType").value==="pattern";document.getElementById("gapHitButton").hidden=true;
  if(window.speechSynthesis)window.speechSynthesis.cancel();
  if(uploadedAudio){uploadedAudio.pause();uploadedAudio.currentTime=0;}
  stimulusNodes.forEach(n=>{try{n.stop();}catch(e){}});
@@ -230,9 +231,15 @@ async function playGeneratedStimulus(type){
   tone(f1,start,0.32);tone(f2,start+0.58,0.32);
   descriptor="Original two-tone same/different practice; "+(same?"same frequency":"different frequency")+"; 700 Hz and "+f2+" Hz. Not a standardized test sequence.";
  }else if(type==="pattern"){
-  const seq=Array.from({length:3},()=>Math.random()<0.5?"L":"H");
-  seq.forEach((v,i)=>tone(v==="L"?880:1122,start+i*0.40,0.20));
-  descriptor="Three-tone pitch-pattern practice, 880/1122 Hz, 200 ms tones with 200 ms onset spacing; sequence key="+seq.join("-")+" (one trial only, not a full standardized FPT).";
+  const patterns=["LLH","LHL","LHH","HHL","HLH","HLL"],practice=Array.from({length:3},()=>patterns[Math.floor(Math.random()*patterns.length)]),test=[];
+  patterns.forEach(p=>{for(let k=0;k<5;k++)test.push(p);});
+  for(let i=test.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[test[i],test[j]]=[test[j],test[i]];}
+  const sequence=practice.concat(test),pan=document.getElementById("patternEar").value==="left"?-1:1;
+  sequence.forEach((seq,idx)=>seq.split("").forEach((v,j)=>tone(v==="L"?880:1122,start+idx*6+j*0.35,0.15,pan,0,0.09)));
+  targetKey="Practice (3): "+practice.join(", ")+"; Test (30): "+test.join(", ");stimulusText="FPT-inspired 33-sequence list; selected channel="+document.getElementById("patternEar").value;
+  patternProtocolDone=false;document.getElementById("revealSpinTarget").disabled=true;
+  stimulusTimers.push(setTimeout(()=>{patternProtocolDone=true;document.getElementById("revealSpinTarget").disabled=false;document.getElementById("stimulusStatus").textContent=stimMsg("Pitch-pattern list complete. Enter the listener's responses, then reveal the generated key if needed. Research/pilot only.","पिच-पैटर्न सूची पूरी। सुनने वाले के उत्तर दर्ज करें, फिर आवश्यकता पर बनाई गई उत्तर-कुंजी दिखाएँ। केवल शोध/पायलट।","ਪਿਚ-ਪੈਟਰਨ ਸੂਚੀ ਪੂਰੀ। ਸੁਣਨ ਵਾਲੇ ਦੇ ਜਵਾਬ ਦਰਜ ਕਰੋ, ਫਿਰ ਲੋੜ ਹੋਣ 'ਤੇ ਬਣੀ ਜਵਾਬ-ਕੁੰਜੀ ਵੇਖੋ। ਸਿਰਫ਼ ਖੋਜ/ਪਾਇਲਟ।");},(sequence.length-1)*6000+1300));
+  descriptor="FPT-inspired sequence: 3 random practice + 30 test patterns (six patterns repeated five times, randomized); 880/1122 Hz, 150 ms tones, 200 ms intertone interval, 6 s between pattern onsets; panned to "+document.getElementById("patternEar").value+" channel. Not an official FPT; phone output/channel not calibrated.";
  }else if(type==="gap"){
   const sr=ctx.sampleRate,segmentSec=6,isiSec=5,gapDurations=[2,3,4,5,6,8,10,12,15,20],events=[];
   gapDurations.forEach(ms=>{for(let k=0;k<6;k++)events.push(ms);});
@@ -305,9 +312,9 @@ function renderStimulusRecords(){
  body.innerHTML=phoneStimulusRecords.map(r=>"<tr><td>"+esc(r.task)+"</td><td>"+esc((r.stimulusText?r.stimulusText+" — ":"")+r.stimulus)+"</td><td>"+esc(r.response||"Not recorded")+"</td><td>"+esc(r.target||"")+"</td><td>"+esc(r.notes||"")+"</td></tr>").join("");
 }
 document.getElementById("noiseMixLevel").addEventListener("input",e=>{document.getElementById("noiseMixValue").textContent=e.target.value+"%";});
-document.getElementById("revealSpinTarget").addEventListener("click",()=>{if(currentStimulusMeta&&currentStimulusMeta.type==="spin")document.getElementById("spinTargetAnswer").hidden=false;});
+document.getElementById("revealSpinTarget").addEventListener("click",()=>{if(currentStimulusMeta&&(currentStimulusMeta.type==="spin"||(currentStimulusMeta.type==="pattern"&&patternProtocolDone)))document.getElementById("spinTargetAnswer").hidden=false;});
 document.getElementById("gapHitButton").addEventListener("click",()=>{if(gapProtocolActive){gapTapCount++;document.getElementById("stimulusStatus").textContent=stimMsg("Gap responses recorded: "+gapTapCount,"दर्ज गैप प्रतिक्रियाएँ: "+gapTapCount,"ਦਰਜ ਕੀਤੇ ਗੈਪ ਜਵਾਬ: "+gapTapCount);}});
-document.getElementById("revealSpinTarget").addEventListener("click",()=>{if(currentStimulusMeta&&currentStimulusMeta.type==="spin")document.getElementById("spinTargetAnswer").hidden=false;});
+document.getElementById("revealSpinTarget").addEventListener("click",()=>{if(currentStimulusMeta&&(currentStimulusMeta.type==="spin"||(currentStimulusMeta.type==="pattern"&&patternProtocolDone)))document.getElementById("spinTargetAnswer").hidden=false;});
 document.getElementById("gapHitButton").addEventListener("click",()=>{if(gapProtocolActive){gapTapCount++;document.getElementById("stimulusStatus").textContent=stimMsg("Gap responses recorded: "+gapTapCount,"दर्ज गैप प्रतिक्रियाएँ: "+gapTapCount,"ਦਰਜ ਕੀਤੇ ਗੈਪ ਜਵਾਬ: "+gapTapCount);}});
 document.getElementById("stimulusType").addEventListener("change",renderStimulusGuide);
 document.getElementById("generateStimulus").addEventListener("click",()=>playGeneratedStimulus(document.getElementById("stimulusType").value));
