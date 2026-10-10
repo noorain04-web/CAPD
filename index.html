@@ -259,16 +259,22 @@ const questionPunjabi={
 "Functional impact":["ਰੋਜ਼ਾਨਾ ਜੀਵਨ 'ਤੇ ਅਸਰ","ਸੁਣਨ ਦੀਆਂ ਮੁਸ਼ਕਲਾਂ ਦਾ ਕੰਮ, ਪੜ੍ਹਾਈ, ਰਿਸ਼ਤਿਆਂ ਜਾਂ ਰੋਜ਼ਾਨਾ ਜੀਵਨ 'ਤੇ ਅਸਰ।"]
 };
 
-function applyLanguage(lang){
- uiLanguage=lang;
- document.documentElement.lang=lang==="hi"?"hi":lang==="pa"?"pa":"en";
- const dict=lang==="hi"?hindiText:lang==="pa"?punjabiText:null;
+const originalTextNodes=new WeakMap();
+const originalAttributeValues=new WeakMap();
+function restoreLocalizedDOM(){
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ while(walker.nextNode()){const n=walker.currentNode;if(originalTextNodes.has(n))n.nodeValue=originalTextNodes.get(n);}
+ document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{if(el.dataset.enPlaceholder)el.placeholder=el.dataset.enPlaceholder;});
+ document.querySelectorAll("option").forEach(el=>{if(el.dataset.enOption)el.textContent=el.dataset.enOption;});
+ document.querySelectorAll("[title],[aria-label]").forEach(el=>{const saved=originalAttributeValues.get(el);if(saved)Object.keys(saved).forEach(attr=>el.setAttribute(attr,saved[attr]));});
+}
+function applyDictionaryToDOM(dict){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  while(walker.nextNode()){
   const n=walker.currentNode;
-  if(n.parentElement&&n.parentElement.closest("script,style"))continue;
-  if(!n.dataset.enText)n.dataset.enText=n.nodeValue;
-  const original=n.dataset.enText,trim=original.trim();
+  if(n.parentElement&&(n.parentElement.closest("script,style")||n.parentElement.closest("option")))continue;
+  if(!originalTextNodes.has(n))originalTextNodes.set(n,n.nodeValue);
+  const original=originalTextNodes.get(n),trim=original.trim();
   n.nodeValue=dict&&dict[trim]?original.replace(trim,dict[trim]):original;
  }
  document.querySelectorAll("input[placeholder],textarea[placeholder]").forEach(el=>{
@@ -279,10 +285,32 @@ function applyLanguage(lang){
   if(!el.dataset.enOption)el.dataset.enOption=el.textContent;
   const p=el.dataset.enOption;el.textContent=dict?(dict[p]||p):p;
  });
+ document.querySelectorAll("[title],[aria-label]").forEach(el=>{
+  let saved=originalAttributeValues.get(el);
+  if(!saved){saved={};originalAttributeValues.set(el,saved);}
+  ["title","aria-label"].forEach(attr=>{
+   if(!el.hasAttribute(attr))return;
+   if(!(attr in saved))saved[attr]=el.getAttribute(attr);
+   const original=saved[attr];el.setAttribute(attr,dict?(dict[original]||original):original);
+  });
+ });
+}
+function applyLanguage(lang){
+ const dict=lang==="hi"?hindiText:lang==="pa"?punjabiText:null;
+ // Restore source text before rebuilding widgets, preventing mixed-language leftovers.
+ restoreLocalizedDOM();
+ uiLanguage=lang;
+ document.documentElement.lang=lang==="hi"?"hi":lang==="pa"?"pa":"en";
+ // Rebuild language-aware widgets, then translate the full visible interface.
  if(typeof renderQ==="function")renderQ();
  if(typeof bmqrSummary==="function")bmqrSummary();
  if(typeof renderWorkflowGuide==="function")renderWorkflowGuide();
- if(typeof updateToolGuidance==="function")updateToolGuidance(); if(typeof syncScreeningOptions==="function")syncScreeningOptions(); if(typeof renderSCAP==="function")renderSCAP(); if(typeof renderSCAPA==="function")renderSCAPA(); if(typeof renderBMQChild==="function")renderBMQChild();
+ if(typeof updateToolGuidance==="function")updateToolGuidance();
+ if(typeof syncScreeningOptions==="function")syncScreeningOptions();
+ if(typeof renderSCAP==="function")renderSCAP();
+ if(typeof renderSCAPA==="function")renderSCAPA();
+ if(typeof renderBMQChild==="function")renderBMQChild();
+ applyDictionaryToDOM(dict);
 }
 document.getElementById("languageSelect").addEventListener("change",e=>applyLanguage(e.target.value));
 
