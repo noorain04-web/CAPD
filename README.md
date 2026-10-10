@@ -48,8 +48,19 @@ The app calculates ΣCAP from DEC + TFM + INT + ORG + APD, excludes GEN, adjusts
 
 BMQ-R is not an India-specific instrument. Do not imply that its English-language results are validated for Hindi, Punjabi or other Indian languages without evidence of an appropriate validated version. The app's custom symptom prompts remain separate and explicitly non-validated.
 
-## Hindi / English interface
+## English, Hindi and Punjabi interface
 
-The interface now has a **“हिन्दी में देखें / View in English”** toggle. Core navigation, patient-history fields, screening guidance, several test labels, BMQ-R instructions and the original supplementary listening prompts have Hindi translations. Switching languages preserves the responses to the custom screening questions.
+The interface language selector offers English, Hindi (हिन्दी) and Punjabi (ਪੰਜਾਬੀ). The app's original supplementary listening prompts have Hindi and Punjabi wording, and responses are preserved when switching languages. Some technical labels and content may remain in English where no translation is available. The downloadable clinical report remains English.
 
-**Important language limitation:** this is a Hindi interface translation, not a validated Hindi version of BMQ-R, SCAP, SCAP-A or STAP. Standardized questionnaires must be administered in an authorised, validated language/version and scored using their official instructions. The downloadable clinical report remains English at this stage; do not treat translated interface wording as validated test material.
+**Important:** these are interface translations and translations of original, non-standardized supplementary history prompts only. They are **not** validated Hindi or Punjabi versions of BMQ-R, SCAP, SCAP-A, STAP or APDQ. Do not translate standardized item wording yourself or apply the original cut-offs to an unofficial translation. Use the official instrument, authorised language/version, administration and scoring instructions.
+
+## Age-guided screening instrument selector
+
+The Screening tab has a selectable tool guide:
+- **SCAP** — Indian-developed child checklist; published evidence highlighted in the app is primarily for school-aged children, particularly ages 8–13.
+- **STAP** — performance-based child screening test, not a questionnaire; validation study focused on ages 8–13 and requires proper materials/administration.
+- **BMQ-R** — use the official questionnaire and manual for the relevant age band (under 6, 6–18, over 18); not India-specific.
+- **APDQ** — official child/adolescent differential screening tool for ages 7–18; use the official source and scoring process.
+- **SCAP-A** — evidence is primarily from older adults, including ages 55–75; do not assume it is validated for all adults.
+
+The selector provides age-based guidance, not an automatic test choice. There is no universally accepted CAPD screening questionnaire for every adult. The app links to official or research sources and does not reproduce copyrighted or author-controlled standardized item text.
