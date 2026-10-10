@@ -175,6 +175,14 @@ en:["Use only clinician-selected, authorised stimuli with documented version and
 hi:["केवल चिकित्सक द्वारा चुने गए अधिकृत स्टिम्युलस उपयोग करें, जिनका संस्करण और स्कोरिंग निर्देश दर्ज हों।","अधिकृत फ़ाइल स्थानीय रूप से लोड करें और मैनुअल का पालन करें। मान्य मैनुअल/मानक न हों तो केवल गुणात्मक अवलोकन दर्ज करें।","फोन की उपयुक्तता परीक्षण और मान्य, कैलिब्रेटेड सेटअप पर निर्भर करती है।"],
 pa:["ਸਿਰਫ਼ ਕਲੀਨੀਸ਼ਨ ਵੱਲੋਂ ਚੁਣੇ ਅਧਿਕਾਰਤ ਸਟਿਮੁਲਸ ਵਰਤੋ ਜਿਨ੍ਹਾਂ ਦਾ ਸੰਸਕਰਣ ਅਤੇ ਸਕੋਰਿੰਗ ਹਦਾਇਤਾਂ ਦਰਜ ਹੋਣ।","ਅਧਿਕਾਰਤ ਫ਼ਾਈਲ ਸਥਾਨਕ ਤੌਰ 'ਤੇ ਲੋਡ ਕਰੋ ਅਤੇ ਮੈਨੂਅਲ ਦੀ ਪਾਲਣਾ ਕਰੋ। ਜੇ ਪ੍ਰਮਾਣਿਤ ਮੈਨੂਅਲ/ਨਾਰਮ ਨਹੀਂ ਹਨ ਤਾਂ ਸਿਰਫ਼ ਗੁਣਾਤਮਕ ਨਿਰੀਖਣ ਦਰਜ ਕਰੋ।","ਫ਼ੋਨ ਦੀ ਉਪਯੋਗਤਾ ਟੈਸਟ ਅਤੇ ਪ੍ਰਮਾਣਿਤ, ਕੈਲੀਬਰੇਟ ਕੀਤੇ ਸੈੱਟਅੱਪ 'ਤੇ ਨਿਰਭਰ ਕਰਦੀ ਹੈ।"]}
 };
+const spinItemQueues={en:[],hi:[],pa:[]};
+function nextSpinItem(lang){
+ if(!spinItemQueues[lang].length){
+  spinItemQueues[lang]=spinPracticeItems[lang].slice();
+  for(let i=spinItemQueues[lang].length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[spinItemQueues[lang][i],spinItemQueues[lang][j]]=[spinItemQueues[lang][j],spinItemQueues[lang][i]];}
+ }
+ return spinItemQueues[lang].pop();
+}
 function stimulusLang(){return uiLanguage==="hi"?"hi":uiLanguage==="pa"?"pa":"en";}
 function stimMsg(en,hi,pa){return uiLanguage==="hi"?hi:uiLanguage==="pa"?pa:en;}
 
@@ -185,7 +193,7 @@ binaural:{en:"Added substitute: tone-in-correlated-noise demonstration with tone
 };
 function renderStimulusGuide(){
  const key=document.getElementById("stimulusType").value,lang=stimulusLang(),g=stimulusGuideText[key][lang]||stimulusGuideText[key].en;
- document.getElementById("spinLanguageWrap").hidden=key!=="spin";document.getElementById("revealSpinTarget").hidden=key!=="spin";document.getElementById("spinTargetAnswer").hidden=true;document.getElementById("spinTargetAnswer").textContent="";document.getElementById("gapHitButton").hidden=key!=="gap";
+ document.getElementById("spinLanguageWrap").hidden=key!=="spin";document.getElementById("revealSpinTarget").hidden=key!=="spin";document.getElementById("spinTargetAnswer").hidden=true;document.getElementById("spinTargetAnswer").textContent="";document.getElementById("gapHitButton").hidden=key!=="gap"||!gapProtocolActive;
  const supplement=stimulusSubstituteNotes[key];document.getElementById("stimulusGuide").innerHTML="<b>"+esc(g[0])+"</b><p>"+esc(g[1])+"</p><p>"+esc(g[2])+"</p>"+(supplement?"<p><b>"+esc(stimMsg("Phone pilot substitute:", "फोन पायलट विकल्प:", "ਫ਼ੋਨ ਪਾਇਲਟ ਬਦਲ:"))+"</b> "+esc(supplement[lang]||supplement.en)+"</p>":"");
  const canGenerate=["discrimination","pattern","gap","dichotic","speechnoise","spin","localization","binaural"].includes(key);
  document.getElementById("generateStimulus").disabled=!canGenerate;
@@ -256,7 +264,7 @@ async function playGeneratedStimulus(type){
   const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start(start);nodes.push(src);
   descriptor="Concept demonstration only: 500 Hz tone "+(present?"present":"absent")+" in correlated noise, nominal "+phase+" phase. Not official MLD, no calibrated threshold.";
  }else if(type==="spin"){
-  const lang=document.getElementById("spinLanguage").value,items=spinPracticeItems[lang],item=items[Math.floor(Math.random()*items.length)],voiceLang=lang==="en"?"en-IN":lang==="hi"?"hi-IN":"pa-IN";
+  const lang=document.getElementById("spinLanguage").value,item=nextSpinItem(lang),voiceLang=lang==="en"?"en-IN":lang==="hi"?"hi-IN":"pa-IN";
   const utterance=new SpeechSynthesisUtterance(item.text);utterance.lang=voiceLang;utterance.rate=0.88;utterance.pitch=1;
   const voices=window.speechSynthesis.getVoices(),voice=voices.find(v=>v.lang.toLowerCase()===voiceLang.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(lang));speechVoiceAvailable=!!voice;if(voice)utterance.voice=voice;
   const noiseBuffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate),ctx.sampleRate),na=noiseBuffer.getChannelData(0);for(let i=0;i<na.length;i++)na[i]=(Math.random()*2-1)*0.18;
