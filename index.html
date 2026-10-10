@@ -316,6 +316,69 @@ function scapDomainText(domain){
  "Listening Fatigue":["Listening Fatigue","सुनने से थकान","ਸੁਣਨ ਨਾਲ ਥਕਾਵਟ"]
  };const r=m[domain];return r?r[uiLanguage==="hi"?1:uiLanguage==="pa"?2:0]:domain;
 }
+
+const bmqTherapyItems=[
+["Speech therapy","स्पीच थेरेपी","ਸਪੀਚ ਥੈਰੇਪੀ"],
+["Auditory training","श्रवण प्रशिक्षण","ਸੁਣਨ ਦੀ ਟ੍ਰੇਨਿੰਗ"],
+["Phonological awareness training","ध्वन्यात्मक जागरूकता प्रशिक्षण","ਧੁਨੀ-ਵਿਗਿਆਨਕ ਜਾਗਰੂਕਤਾ ਟ੍ਰੇਨਿੰਗ"],
+["Phonics help","फोनिक्स में सहायता","ਫੋਨਿਕਸ ਵਿੱਚ ਮਦਦ"],
+["Reading remediation","पठन-सुधार सहायता","ਪੜ੍ਹਨ ਵਿੱਚ ਸੁਧार ਲਈ ਮਦਦ"],
+["Sensory-integration therapy","संवेदी-एकीकरण थेरेपी","ਸੰਵੇਦੀ-ਇਕੀਕਰਨ ਥੈਰੇਪੀ"]
+];
+const bmqChildItems=[
+["DEC","Has difficulty articulating speech sounds accurately.","बोली की ध्वनियों का सही उच्चारण करने में कठिनाई होती है।","ਬੋਲੀ ਦੀਆਂ ਧੁਨੀਆਂ ਦਾ ਸਹੀ ਉਚਾਰਨ ਕਰਨ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["DEC","Struggles to understand spoken language.","बोली गई भाषा समझने में कठिनाई होती है।","ਬੋਲੀ ਗਈ ਭਾਸ਼ਾ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["DEC","Has difficulty understanding spoken instructions or directions.","मौखिक निर्देश या दिशा-निर्देश समझने में कठिनाई होती है।","ਮੌਖਿਕ ਹਦਾਇਤਾਂ ਜਾਂ ਦਿਸ਼ਾ-ਨਿਰਦੇਸ਼ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["DEC","Struggles with oral reading (reading aloud).","जोर से पढ़ने में कठिनाई होती है।","ਉੱਚੀ ਆਵਾਜ਼ ਵਿੱਚ ਪੜ੍ਹਨ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["DEC","Has difficulty with phonics.","फोनिक्स (ध्वनि-अक्षर संबंध) में कठिनाई होती है।","ਫੋਨਿਕਸ (ਧੁਨੀ-ਅੱਖਰ ਸੰਬੰਧ) ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["DEC","Has difficulty with spelling.","वर्तनी लिखने में कठिनाई होती है।","ਸ਼ਬਦਾਂ ਦੀ ਸਹੀ ਸਪੈਲਿੰਗ ਲਿਖਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["DEC","Displays a delayed or unusually slow response to spoken language.","बोली गई भाषा पर प्रतिक्रिया देने में देरी या असामान्य धीमापन दिखता है।","ਬੋਲੀ ਗਈ ਭਾਸ਼ਾ ਦਾ ਜਵਾਬ ਦੇਣ ਵਿੱਚ ਦੇਰੀ ਜਾਂ ਅਸਧਾਰਨ ਹੌਲਾਪਣ ਦਿਖਾਈ ਦਿੰਦਾ ਹੈ।"],
+["DEC","Struggles with foreign-language learning or unfamiliar dialects.","विदेशी भाषा सीखने या अपरिचित बोलियों को समझने में कठिनाई होती है।","ਵਿਦੇਸ਼ੀ ਭਾਸ਼ਾ ਸਿੱਖਣ ਜਾਂ ਅਣਜਾਣ ਬੋਲੀਆਂ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["TFM-NOI","Is hypersensitive to loud sounds or specific frequencies.","तेज़ आवाज़ों या कुछ विशेष ध्वनियों के प्रति अत्यधिक संवेदनशीलता होती है।","ਉੱਚੀਆਂ ਆਵਾਜ਼ਾਂ ਜਾਂ ਖ਼ਾਸ ਧੁਨੀਆਂ ਪ੍ਰਤੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸੰਵੇਦਨਸ਼ੀਲਤਾ ਹੁੰਦੀ ਹੈ।"],
+["TFM-NOI","Is easily distracted by background auditory noise.","पृष्ठभूमि के शोर से ध्यान आसानी से भटक जाता है।","ਪਿਛੋਕੜ ਦੇ ਸ਼ੋਰ ਨਾਲ ਧਿਆਨ ਆਸਾਨੀ ਨਾਲ ਭਟਕ ਜਾਂਦਾ ਹੈ।"],
+["TFM-NOI","Has difficulty understanding speech in noise or reverberation.","शोर या गूँज में बोली समझने में कठिनाई होती है।","ਸ਼ੋਰ ਜਾਂ ਗੂੰਜ ਵਿੱਚ ਬੋਲੀ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["TFM-NOI","Frequently makes extra noise or vocal sounds compared with peers.","साथियों की तुलना में अक्सर अतिरिक्त शोर या आवाज़ें निकालता/निकालती है।","ਹਮਉਮਰ ਬੱਚਿਆਂ ਦੇ ਮੁਕਾਬਲੇ ਅਕਸਰ ਵਾਧੂ ਸ਼ੋਰ ਜਾਂ ਆਵਾਜ਼ਾਂ ਕੱਢਦਾ/ਕੱਢਦੀ ਹੈ।"],
+["TFM-NOI","Struggles to listen comfortably in large groups or open settings.","बड़े समूहों या खुले स्थानों में सहजता से सुनने में कठिनाई होती है।","ਵੱਡੇ ਸਮੂਹਾਂ ਜਾਂ ਖੁੱਲ੍ਹੀਆਂ ਥਾਵਾਂ ਵਿੱਚ ਆਰਾਮ ਨਾਲ ਸੁਣਨ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["TFM-MEM","Responds impulsively or too early before hearing the full instruction.","पूरा निर्देश सुनने से पहले ही जल्दबाज़ी में जवाब देता/देती है।","ਪੂਰੀ ਹਦਾਇਤ ਸੁਣਨ ਤੋਂ ਪਹਿਲਾਂ ਹੀ ਜਲਦੀ ਵਿੱਚ ਜਵਾਬ ਦਿੰਦਾ/ਦਿੰਦੀ ਹੈ।"],
+["TFM-MEM","Frequently interrupts others while they are speaking.","दूसरों के बोलते समय अक्सर बीच में बोलता/बोलती है।","ਦੂਜਿਆਂ ਦੇ ਬੋਲਦੇ ਸਮੇਂ ਅਕਸਰ ਵਿਚਕਾਰ ਬੋਲਦਾ/ਬੋਲਦੀ ਹੈ।"],
+["TFM-MEM","Shows poor reading comprehension despite adequate decoding.","शब्द पढ़ पाने के बावजूद पढ़ी हुई सामग्री समझने में कठिनाई होती है।","ਸ਼ਬਦ ਪੜ੍ਹ ਲੈਣ ਦੇ ਬਾਵਜੂਦ ਪੜ੍ਹੀ ਸਮੱਗਰੀ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["TFM-MEM","Speaks rapidly or rushes through sentences.","बहुत तेज़ बोलता/बोलती है या वाक्य जल्दबाज़ी में बोलता/बोलती है।","ਬਹੁਤ ਤੇਜ਼ ਬੋਲਦਾ/ਬੋਲਦੀ ਹੈ ਜਾਂ ਵਾਕ ਜਲਦੀ-ਜਲਦੀ ਬੋਲਦਾ/ਬੋਲਦੀ ਹੈ।"],
+["TFM-MEM","Forgets verbal instructions shortly after hearing them.","मौखिक निर्देश सुनने के कुछ ही समय बाद भूल जाता/जाती है।","ਮੌਖਿਕ ਹਦਾਇਤਾਂ ਸੁਣਨ ਤੋਂ ਥੋੜ੍ਹੀ ਦੇਰ ਬਾਅਦ ਭੁੱਲ ਜਾਂਦਾ/ਜਾਂਦੀ ਹੈ।"],
+["TFM-MEM","Struggles to remember multi-step spoken instructions.","कई चरणों वाले मौखिक निर्देश याद रखने में कठिनाई होती है।","ਕਈ ਕਦਮਾਂ ਵਾਲੀਆਂ ਮੌਖਿਕ ਹਦਾਇਤਾਂ ਯਾਦ ਰੱਖਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["TFM-VAR","Listening performance varies from day to day or from morning to afternoon.","सुनने का प्रदर्शन दिन-प्रतिदिन या सुबह से दोपहर तक बदलता रहता है।","ਸੁਣਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਿਨੋਂ-ਦਿਨ ਜਾਂ ਸਵੇਰ ਤੋਂ ਦੁਪਹਿਰ ਤੱਕ ਬਦਲਦੀ ਰਹਿੰਦੀ ਹੈ।"],
+["TFM-VAR","Has a short auditory attention span or difficulty sustaining attention.","सुनते समय ध्यान कम देर तक रहता है या ध्यान बनाए रखने में कठिनाई होती है।","ਸੁਣਦੇ ਸਮੇਂ ਧਿਆਨ ਥੋੜ੍ਹੀ ਦੇਰ ਰਹਿੰਦਾ ਹੈ ਜਾਂ ਧਿਆਨ ਕਾਇਮ ਰੱਖਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["TFM-VAR","Has a diagnosed or suspected history of ADHD/ADD.","ADHD/ADD का निदान हुआ है या इसकी आशंका/इतिहास है।","ADHD/ADD ਦਾ ਨਿਦਾਨ ਹੋਇਆ ਹੈ ਜਾਂ ਇਸ ਦਾ ਸ਼ੱਕ/ਇਤਿਹਾਸ ਹੈ।"],
+["TFM-VAR","Shows increased anxiety in new or challenging listening situations.","नई या चुनौतीपूर्ण सुनने की परिस्थितियों में चिंता बढ़ जाती है।","ਨਵੀਆਂ ਜਾਂ ਚੁਣੌਤੀਪੂਰਨ ਸੁਣਨ ਦੀਆਂ ਸਥਿਤੀਆਂ ਵਿੱਚ ਚਿੰਤਾ ਵੱਧ ਜਾਂਦੀ ਹੈ।"],
+["TFM-VAR","Experiences frustration during listening tasks.","सुनने से जुड़े कार्यों के दौरान झुंझलाहट होती है।","ਸੁਣਨ ਵਾਲੇ ਕੰਮਾਂ ਦੌਰਾਨ ਨਿਰਾਸ਼ਾ ਜਾਂ ਚਿੜਚਿੜਾਪਣ ਹੁੰਦਾ ਹੈ।"],
+["TFM-VAR","Daydreams or tunes out during lessons or conversations.","कक्षा या बातचीत के दौरान खोया/खोई रहता/रहती है या ध्यान हट जाता है।","ਪਾਠ ਜਾਂ ਗੱਲਬਾਤ ਦੌਰਾਨ ਖ਼ਿਆਲਾਂ ਵਿੱਚ ਗੁੰਮ ਹੋ ਜਾਂਦਾ/ਜਾਂਦੀ ਹੈ ਜਾਂ ਧਿਆਨ ਹਟ ਜਾਂਦਾ ਹੈ।"],
+["TFM-VAR","Frequently needs repetition (for example, says “Huh?” or “What?”).","अक्सर बात दोहराने की ज़रूरत होती है (जैसे “क्या?” कहना)।","ਅਕਸਰ ਗੱਲ ਦੁਹਰਾਉਣ ਦੀ ਲੋੜ ਪੈਂਦੀ ਹੈ (ਜਿਵੇਂ “ਕੀ?” ਕਹਿਣਾ)।"],
+["TFM-VAR","Shows signs of listening fatigue after school or work.","स्कूल या काम के बाद सुनने से थकान के संकेत दिखते हैं।","ਸਕੂਲ ਜਾਂ ਕੰਮ ਤੋਂ ਬਾਅਦ ਸੁਣਨ ਕਾਰਨ ਥਕਾਵਟ ਦੇ ਸੰਕੇਤ ਦਿਖਦੇ ਹਨ।"],
+["INT","Has severe difficulty integrating what is heard with what is seen (audio-visual mismatch).","सुनी और देखी गई जानकारी को जोड़ने में बहुत कठिनाई होती है (श्रव्य-दृश्य असंगति)।","ਸੁਣੀ ਅਤੇ ਵੇਖੀ ਜਾਣਕਾਰੀ ਨੂੰ ਜੋੜਨ ਵਿੱਚ ਬਹੁਤ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ (ਸੁਣਨ-ਵੇਖਣ ਵਿੱਚ ਮੇਲ ਨਾ ਹੋਣਾ)।"],
+["INT","Struggles with written expression, note-taking, or writing while listening.","सुनते समय लिखने, नोट्स लेने या लिखित अभिव्यक्ति में कठिनाई होती है।","ਸੁਣਦੇ ਸਮੇਂ ਲਿਖਣ, ਨੋਟਸ ਲੈਣ ਜਾਂ ਲਿਖਤੀ ਪ੍ਰਗਟਾਵੇ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["INT","Has marked reading difficulty that does not improve with usual phonics remediation.","सामान्य फोनिक्स सहायता के बावजूद पढ़ने में स्पष्ट कठिनाई बनी रहती है।","ਆਮ ਫੋਨਿਕਸ ਸਹਾਇਤਾ ਦੇ ਬਾਵਜੂਦ ਪੜ੍ਹਨ ਵਿੱਚ ਵੱਡੀ ਮੁਸ਼ਕਲ ਬਣੀ ਰਹਿੰਦੀ ਹੈ।"],
+["INT","Shows difficulty with non-verbal, pragmatic, or social listening skills.","गैर-मौखिक, व्यवहारिक-सामाजिक या सामाजिक सुनने के कौशल में कठिनाई होती है।","ਗੈਰ-ਮੌਖਿਕ, ਵਿਹਾਰਕ-ਸਮਾਜਿਕ ਜਾਂ ਸਮਾਜਿਕ ਸੁਣਨ ਦੇ ਹੁਨਰਾਂ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["INT","Has difficulty switching between visual and auditory teaching methods.","दृश्य और श्रव्य शिक्षण तरीकों के बीच बदलाव करने में कठिनाई होती है।","ਦ੍ਰਿਸ਼ਟੀ ਅਤੇ ਸੁਣਨ-ਅਧਾਰਿਤ ਸਿੱਖਣ ਦੇ ਤਰੀਕਿਆਂ ਵਿਚਕਾਰ ਬਦਲਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["ORG","Is consistently disorganized with schoolwork, task preparation, or workspace.","स्कूल के काम, कार्य की तैयारी या कार्यस्थल को व्यवस्थित रखने में लगातार कठिनाई होती है।","ਸਕੂਲ ਦੇ ਕੰਮ, ਕੰਮ ਦੀ ਤਿਆਰੀ ਜਾਂ ਕੰਮ ਵਾਲੀ ਥਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਰੱਖਣ ਵਿੱਚ ਲਗਾਤਾਰ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["ORG","Struggles to recall or carry out events in the correct sequence.","घटनाओं को सही क्रम में याद करने या करने में कठिनाई होती है।","ਘਟਨਾਵਾਂ ਨੂੰ ਸਹੀ ਕ੍ਰਮ ਵਿੱਚ ਯਾਦ ਕਰਨ ਜਾਂ ਕਰਨ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["ORG","Has difficulty following timelines or telling stories in sequence.","समय-क्रम समझने या घटनाओं को क्रम से बताने में कठिनाई होती है।","ਸਮਾਂ-ਕ੍ਰਮ ਸਮਝਣ ਜਾਂ ਘਟਨਾਵਾਂ ਨੂੰ ਕ੍ਰਮਵਾਰ ਦੱਸਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["ORG","Shows poor time management or time estimation during tasks.","काम करते समय समय का प्रबंधन या अनुमान लगाने में कठिनाई होती है।","ਕੰਮ ਕਰਦੇ ਸਮੇਂ ਸਮੇਂ ਦਾ ਪ੍ਰਬੰਧ ਜਾਂ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["APD","Academic performance is noticeably below estimated cognitive or intellectual ability.","शैक्षणिक प्रदर्शन अनुमानित संज्ञानात्मक या बौद्धिक क्षमता से स्पष्ट रूप से कम है।","ਪੜ੍ਹਾਈ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਅੰਦਾਜ਼ਿਤ ਬੌਧਿਕ ਜਾਂ ਸੋਚਣ ਦੀ ਸਮਰੱਥਾ ਨਾਲੋਂ ਕਾਫ਼ੀ ਘੱਟ ਹੈ।"],
+["APD","Struggles with verbal jokes, sarcasm, or abstract spoken concepts.","मौखिक चुटकुले, व्यंग्य या अमूर्त मौखिक अवधारणाएँ समझने में कठिनाई होती है।","ਬੋਲੀ ਦੇ ਚੁਟਕਲੇ, ਤਨਜ਼ ਜਾਂ ਅਮੂਰਤ ਮੌਖਿਕ ਧਾਰਨਾਵਾਂ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["APD","Frequently misunderstands a speaker’s tone or intent.","वक्ता के लहजे या आशय को अक्सर गलत समझता/समझती है।","ਬੋਲਣ ਵਾਲੇ ਦੇ ਲਹਿਜ਼ੇ ਜਾਂ ਮਨਸ਼ੇ ਨੂੰ ਅਕਸਰ ਗਲਤ ਸਮਝਦਾ/ਸਮਝਦੀ ਹੈ।"],
+["APD","Struggles to locate where a sound originated.","आवाज़ किस दिशा या स्थान से आई, यह पहचानने में कठिनाई होती है।","ਆਵਾਜ਼ ਕਿੱਥੋਂ ਜਾਂ ਕਿਸ ਦਿਸ਼ਾ ਤੋਂ ਆਈ, ਇਹ ਪਛਾਣਨ ਵਿੱਚ ਮੁਸ਼ਕਲ ਹੁੰਦੀ ਹੈ।"],
+["APD","Relies heavily on visual cues or lip-reading to confirm spoken messages.","बोली गई बात की पुष्टि के लिए दृश्य संकेतों या होंठ पढ़ने पर बहुत निर्भर रहता/रहती है।","ਬੋਲੀ ਗੱਲ ਦੀ ਪੁਸ਼ਟੀ ਲਈ ਦ੍ਰਿਸ਼ਟੀ ਸੰਕੇਤਾਂ ਜਾਂ ਹੋਠ ਪੜ੍ਹਨ 'ਤੇ ਬਹੁਤ ਨਿਰਭਰ ਕਰਦਾ/ਕਰਦੀ ਹੈ।"],
+["APD","Has a history of fluctuating hearing or frequent early-childhood middle-ear infections.","सुनने में उतार-चढ़ाव या बचपन में बार-बार मध्य-कर्ण संक्रमण का इतिहास है।","ਸੁਣਨ ਵਿੱਚ ਉਤਾਰ-ਚੜ੍ਹਾਅ ਜਾਂ ਛੋਟੀ ਉਮਰ ਵਿੱਚ ਵਾਰ-ਵਾਰ ਮੱਧ-ਕੰਨ ਦੇ ਇਨਫੈਕਸ਼ਨ ਦਾ ਇਤਿਹਾਸ ਹੈ।"]
+];
+const bmqChildCategories={
+"DEC":{en:"Decoding (DEC)",hi:"डिकोडिंग (DEC)",pa:"ਡੀਕੋਡਿੰਗ (DEC)",max:8},
+"TFM-NOI":{en:"TFM — Noise",hi:"TFM — शोर",pa:"TFM — ਸ਼ੋਰ",max:5},
+"TFM-MEM":{en:"TFM — Memory",hi:"TFM — स्मृति",pa:"TFM — ਯਾਦਦਾਸ਼ਤ",max:6},
+"TFM-VAR":{en:"TFM — Variable",hi:"TFM — परिवर्तनशील",pa:"TFM — ਬਦਲਦਾ ਰੂਪ",max:8},
+"INT":{en:"Integration (INT)",hi:"इंटीग्रेशन (INT)",pa:"ਇੰਟੀਗ੍ਰੇਸ਼ਨ (INT)",max:5},
+"ORG":{en:"Organization (ORG)",hi:"ऑर्गनाइज़ेशन (ORG)",pa:"ਆਰਗੇਨਾਈਜ਼ੇਸ਼ਨ (ORG)",max:4},
+"APD":{en:"Additional / General APD",hi:"अतिरिक्त / सामान्य APD",pa:"ਵਾਧੂ / ਆਮ APD",max:6}
+};
+
 function renderSCAP(){
  const panel=document.getElementById("scapPanel");if(!panel)return;
  const show=v("screeningTool")==="SCAP";panel.hidden=!show;if(!show)return;
