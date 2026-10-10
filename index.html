@@ -312,7 +312,7 @@ function renderStimulusRecords(){
  body.innerHTML=phoneStimulusRecords.map(r=>"<tr><td>"+esc(r.task)+"</td><td>"+esc((r.stimulusText?r.stimulusText+" — ":"")+r.stimulus)+"</td><td>"+esc(r.response||"Not recorded")+"</td><td>"+esc(r.target||"")+"</td><td>"+esc(r.notes||"")+"</td></tr>").join("");
 }
 document.getElementById("noiseMixLevel").addEventListener("input",e=>{document.getElementById("noiseMixValue").textContent=e.target.value+"%";});
-document.getElementById("revealSpinTarget").addEventListener("click",()=>{if(currentStimulusMeta&&(currentStimulusMeta.type==="spin"||(currentStimulusMeta.type==="pattern"&&patternProtocolDone)))document.getElementById("spinTargetAnswer").hidden=false;});
+document.getElementById("revealSpinTarget").addEventListener("click",()=>{const answer=document.getElementById("spinTargetAnswer");if(!currentStimulusMeta)return;if(currentStimulusMeta.type==="spin"){answer.textContent=stimMsg("Target: ","लक्ष्य: ","ਟਾਰਗੇਟ: ")+(currentStimulusMeta.target||"")+" | "+(currentStimulusMeta.stimulusText||"");answer.hidden=false;}else if(currentStimulusMeta.type==="pattern"&&patternProtocolDone){answer.textContent=stimMsg("Generated answer key: ","बनाई गई उत्तर-कुंजी: ","ਬਣੀ ਜਵਾਬ-ਕੁੰਜੀ: ")+(currentStimulusMeta.target||"");answer.hidden=false;}});
 document.getElementById("gapHitButton").addEventListener("click",()=>{if(gapProtocolActive){gapTapCount++;document.getElementById("stimulusStatus").textContent=stimMsg("Gap responses recorded: "+gapTapCount,"दर्ज गैप प्रतिक्रियाएँ: "+gapTapCount,"ਦਰਜ ਕੀਤੇ ਗੈਪ ਜਵਾਬ: "+gapTapCount);}});
 
 
