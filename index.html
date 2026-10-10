@@ -138,11 +138,11 @@ function bmqrSummary(){
  const core=["DEC","TFM","INT","ORG","APD"],complete=core.every(k=>vals[k].yes!==null),valid=invalid.length===0;
  const ysum=complete?core.reduce((n,k)=>n+vals[k].yes,0):null;
  const naSum=core.reduce((n,k)=>n+vals[k].na,0),denom=39-naSum;
- let status="Enter Yes counts for DEC, TFM, INT, ORG and APD to calculate ΣCAP.";
+ let status=uiLanguage==="hi"?"ΣCAP की गणना के लिए DEC, TFM, INT, ORG और APD के ‘हाँ’ उत्तरों की संख्या दर्ज करें।":uiLanguage==="pa"?"ΣCAP ਦੀ ਗਿਣਤੀ ਲਈ DEC, TFM, INT, ORG ਅਤੇ APD ਦੇ ‘ਹਾਂ’ ਜਵਾਬਾਂ ਦੀ ਗਿਣਤੀ ਦਰਜ ਕਰੋ।":"Enter Yes counts for DEC, TFM, INT, ORG and APD to calculate ΣCAP.";
  if(!valid)status="Check counts: "+invalid.join("; ")+".";
- else if(complete)status="ΣCAP: "+ysum+" / "+denom+" available items. "+(ysum>=8?"The BMQ-R manual suggests further APD testing when ΣCAP is 8 or more.":"Below the manual 8-point referral prompt; this does not rule out APD when concerns persist.");
+ else if(complete)status="ΣCAP: "+ysum+" / "+denom+" "+(uiLanguage==="hi"?"उपलब्ध प्रश्न। "+(ysum>=8?"BMQ-R मैनुअल के अनुसार ΣCAP 8 या अधिक होने पर आगे APD परीक्षण पर विचार करें।":"यह मैनुअल के 8-अंक वाले रेफरल संकेत से कम है; चिंता बनी रहने पर APD की संभावना समाप्त नहीं होती।"):uiLanguage==="pa"?"ਉਪਲਬਧ ਆਈਟਮਾਂ। "+(ysum>=8?"BMQ-R ਮੈਨੂਅਲ ਅਨੁਸਾਰ ΣCAP 8 ਜਾਂ ਵੱਧ ਹੋਣ 'ਤੇ ਹੋਰ APD ਟੈਸਟਿੰਗ ਬਾਰੇ ਵਿਚਾਰੋ।":"ਇਹ ਮੈਨੂਅਲ ਦੇ 8-ਅੰਕ ਰੈਫ਼ਰਲ ਸੰਕੇਤ ਤੋਂ ਘੱਟ ਹੈ; ਚਿੰਤਾ ਜਾਰੀ ਰਹੇ ਤਾਂ APD ਦੀ ਸੰਭਾਵਨਾ ਰੱਦ ਨਹੀਂ ਹੁੰਦੀ।"):(ysum>=8?"The BMQ-R manual suggests further APD testing when ΣCAP is 8 or more.":"Below the manual 8-point referral prompt; this does not rule out APD when concerns persist."));
  const result=document.getElementById("bmqrResult");
- if(result)result.innerHTML=esc(status)+"<br><span class='small'>GEN responses are excluded from ΣCAP. This is a manual-based screening prompt, not a diagnosis; review official instructions and clinical context.</span>";
+ if(result)result.innerHTML=esc(status)+"<br><span class='small'>"+esc(uiLanguage==="hi"?"GEN उत्तर ΣCAP में शामिल नहीं हैं। यह मैनुअल-आधारित स्क्रीनिंग संकेत है, निदान नहीं; आधिकारिक निर्देशों और नैदानिक संदर्भ की समीक्षा करें।":uiLanguage==="pa"?"GEN ਜਵਾਬ ΣCAP ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ। ਇਹ ਮੈਨੂਅਲ-ਅਧਾਰਿਤ ਸਕ੍ਰੀਨਿੰਗ ਸੰਕੇਤ ਹੈ, ਨਿਦਾਨ ਨਹੀਂ; ਅਧਿਕਾਰਤ ਹਦਾਇਤਾਂ ਅਤੇ ਕਲੀਨੀਕੀ ਸੰਦਰਭ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।":"GEN responses are excluded from ΣCAP. This is a manual-based screening prompt, not a diagnosis; review official instructions and clinical context.")+"</span>";
  return {respondent:v("bmqrRespondent"),language:v("bmqrLanguage"),ageBand:v("bmqrAgeBand"),grade:v("bmqrGrade"),categories:vals,complete:complete,valid:valid,validationErrors:invalid,sigmaCAP:valid&&complete?ysum:null,sigmaCAPDenominator:denom,manualReferralPrompt:valid&&complete?ysum>=8:null,notes:v("bmqrNotes")};
 }
 function list(a){return a.length?"<ul>"+a.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>":"<p>None selected / not recorded.</p>";}
