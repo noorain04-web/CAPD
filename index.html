@@ -234,7 +234,7 @@ document.getElementById("playUploadedStimulus").addEventListener("click",()=>{
 });
 document.getElementById("recordStimulusResponse").addEventListener("click",()=>{
  if(!currentStimulusMeta){document.getElementById("stimulusStatus").textContent=stimMsg("Play a generated stimulus or local audio file before saving a response.","उत्तर सहेजने से पहले पायलट स्टिम्युलस या स्थानीय ऑडियो चलाएँ।","ਜਵਾਬ ਸੰਭਾਲਣ ਤੋਂ ਪਹਿਲਾਂ ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਜਾਂ ਸਥਾਨਕ ਆਡੀਓ ਚਲਾਓ।");return;}
- const type=document.getElementById("stimulusType").value,domain=stimulusDomain(type),response=document.getElementById("stimulusResponse").value.trim(),condition=document.getElementById("stimulusCondition").value.trim()||currentStimulusMeta.descriptor,notes=document.getElementById("stimulusNotes").value.trim();
+ const type=currentStimulusMeta.type||document.getElementById("stimulusType").value,domain=stimulusDomain(type),response=document.getElementById("stimulusResponse").value.trim(),condition=document.getElementById("stimulusCondition").value.trim()||currentStimulusMeta.descriptor,notes=document.getElementById("stimulusNotes").value.trim();
  const rec={task:domain,stimulus:condition,response,notes,source:currentStimulusMeta.source,playedAt:currentStimulusMeta.playedAt,language:stimulusLang(),status:"descriptive observation only; no clinical norms"};
  phoneStimulusRecords.push(rec);renderStimulusRecords();
  addRow(domain,"Phone stimulus lab — pilot / uploaded audio",condition,response,"","No validated norms; descriptive only. Device/transducer calibration not established.");
