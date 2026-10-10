@@ -7,6 +7,8 @@ Open [index.html](index.html) in a modern browser. Core functions work offline; 
 
 ## Main features
 - Child/adolescent and adult screening pathways selected by age.
+- Live guided-workflow banner with a suggested next step, updated from age, safety flags, screening selection, peripheral findings and central-test documentation.
+- Guided status is saved in JSON export and included as a snapshot in the clinical report; English, Hindi and Punjabi guidance is available.
 - Original symptom prompts across functional listening domains.
 - Fields for separately administered standardized questionnaires.
 - Peripheral audiology entry: otoscopy, tympanometry, pure-tone summary, speech measures, speech-in-noise, reflexes, OAE and ABR.
@@ -16,6 +18,8 @@ Open [index.html](index.html) in a modern browser. Core functions work offline; 
 - Downloadable HTML clinical report, print / Save as PDF, and JSON export.
 
 ## Important clinical limitations
+
+The guided workflow is an organisational aid, not a validated decision rule. It prioritises urgent review when sudden hearing change or acute neurological symptoms are recorded, prompts review of other safety flags, and reminds the clinician to review peripheral audiology before interpreting central test results. A non-normal or missing peripheral result is not an automatic CAPD exclusion or diagnosis. Phone microphone/noise checks and uncalibrated earphone tasks must not be presented as calibrated dB HL hearing tests. The workflow does not implement automated psychoacoustic testing or an autonomous CAPD classifier.
 This is a prototype, not a validated medical device or autonomous diagnostic system. Its screening prompts are original and are **not** CHAPPS, Fisher's Auditory Problems Checklist, SIFTER or a validated adult questionnaire. They have no diagnostic cut-off. Do not claim CAPD based on screening counts or Z-score flags alone.
 
 A qualified audiologist must select and interpret age- and language-appropriate tests using current test manuals, normative data, peripheral audiology findings and the complete clinical history. Consider language proficiency, attention, cognition, development and other differential or co-occurring conditions. Sudden hearing loss or acute neurological symptoms require urgent medical assessment.
