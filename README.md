@@ -87,3 +87,32 @@ The stimulus lab also provides original, non-standardized demonstrations for aud
 - **Binaural phase demonstration:** presents a tone as present or absent in correlated noise with a nominal S0/Sπ phase relationship. It illustrates the concept behind masking-level differences, but is not the official MLD procedure and has no threshold or norms.
 
 All three tasks log descriptive responses in the case report and JSON. They are pilot/familiarisation demonstrations only. Browser audio output, channel routing, transducer response, room acoustics, signal level and timing are not clinically calibrated. Do not use these tasks to diagnose, rule out, or assign severity to CAPD.
+
+
+## Protocol-fidelity audit and multilingual SPIN-style practice
+
+**Audit result: the interface does not reproduce every standardized CAPD test's complete stimulus set and administration sequence.** It contains original demonstrations and manual-entry workflows; do not describe all of them as standardized or validated.
+
+| Interface task | Relationship to published procedures | Current limit |
+|---|---|---|
+| Two-tone discrimination | General same/different auditory-discrimination principle | One original tone pair at a time; no universal published CAPD sequence, full trial set or norms |
+| Three-tone pitch pattern | Uses 880/1122 Hz tones as a practice example inspired by frequency-pattern methods | One three-tone trial at a time; not a complete FPT/Pitch Pattern Sequence protocol; published versions differ |
+| Gap-in-noise | Updated to a GIN-inspired list architecture: 36 six-second noise segments, 5-second inter-segment intervals, 60 gaps total; ten gap durations (2, 3, 4, 5, 6, 8, 10, 12, 15, 20 ms) appear six times each, with no more than three gaps per segment | Original browser-generated noise, not official GIN recordings or RGDT; no calibrated presentation, validated norms, false-positive analysis or clinical threshold calculation |
+| Dichotic | Demonstrates simultaneous left/right stereo routing | Pure tones, not dichotic digits/words/sentences; not a clinical dichotic test |
+| SPIN-style practice | 15 newly written sentences each in English, Hindi and Punjabi; browser speech synthesis plus generated background noise; response and target key can be recorded | Not official SPIN/SINCA materials, no validated language equivalence, talker recording, calibrated SNR or norms; browser voice availability/pronunciation varies |
+| Localization/lateralization | Randomized virtual left/centre/right stereo panning | Not real-world localization and not a validated clinical localization protocol |
+| Binaural interaction / MLD | Illustrates a tone in correlated noise with nominal S0/Sπ conditions | Not the official MLD procedure; no threshold, calibrated phase/level or norms |
+| Clinician-selected local audio | Supports local playback of an authorized recording | The clinician must follow the material's own manual and scoring procedure; the app does not verify that sequence |
+
+### SPIN-style item bank
+
+The app contains 15 original short sentences per language. It selects an item, plays it through the browser's speech-synthesis service while noise is played, hides the answer key until requested, and stores the response, item text, target key, language and condition in the case report/JSON. These are practice/feasibility prompts only. Speech synthesis may use a fallback voice or may not have an appropriate Punjabi/Hindi voice installed; if pronunciation is unsuitable, use an authorized local recording instead. The noise control is a digital gain setting, not a calibrated SNR. Do not compare scores across languages or use these items to diagnose, rule out or grade CAPD.
+
+### Evidence used for the audit
+
+- ASHA, [Central Auditory Processing Disorder Practice Portal](https://www.asha.org/practice-portal/clinical-topics/central-auditory-processing-disorder/): describes auditory-discrimination, temporal, dichotic, monaural low-redundancy speech, binaural-interaction and localization domains; there is no universally accepted CAPD screening method.
+- Musiek et al., [GIN test procedure (PubMed)](https://pubmed.ncbi.nlm.nih.gov/16377996/): describes 6-second white-noise segments with 0–3 gaps, gap durations from 2–20 ms and 60 gap events per list.
+- [Published GIN protocol details (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC9443716/): describes practice, monaural presentation, 5-second interstimulus intervals, gap durations, repeat counts and the threshold method.
+- [MAPA-2 validity study (ASHA Journals)](https://pubs.asha.org/doi/10.1044/2020_LSHSS-20-00001): illustrates that a specific battery's speech-in-noise and pitch-pattern subtests have defined item sets; these cannot be replaced by arbitrary browser-generated phrases and called equivalent.
+
+This audit implements reproducible timing/list structure where a published description supports it, while deliberately not claiming equivalence to copyrighted or standardized materials. Clinical use still requires authorized materials, the exact test manual, calibrated equipment, suitable age/language norms and qualified interpretation. Browser end-to-end testing, acoustic calibration and multilingual speech-quality validation have not been completed.
