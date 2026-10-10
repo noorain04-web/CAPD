@@ -35,18 +35,17 @@ Clinical deployment requires qualified review, usability testing, appropriate st
 
 ## Indian checklist workflow: SCAP and SCAP-A
 
-The main screening workflow is intentionally limited to two Indian-developed checklists:
+The main screening workflow is age-guided:
 
 - **SCAP (children)** — a 12-item screening checklist studied in school-age samples. Research has reported a cutoff around 6 in studied samples, but the authorised form, scoring direction and local protocol must be verified. The app does not reproduce verified official items. [SCAP research record](https://www.researchgate.net/publication/284588609_Utility_of_the_screening_checklist_for_auditory_processing_SCAP_in_detecting_CAPD_in_children).
+- **BMQ-R (child pathway)** — the interface offers an item-by-item draft based on the 6 therapy-history prompts and 42 behavioural prompts supplied for this project. It records therapy history separately, calculates descriptive Yes counts by supplied category (DEC, TFM Noise/Memory/Variable, INT, ORG and APD), and includes the answers in HTML report and JSON export. The 42-item count is **not verified as the official BMQ-R wording, category structure or scoring** and no official age-norm threshold is applied. Use the current [official EAA form](https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20form%209-2020.pdf) and [administration/interpretation manual](https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20Manual%209-2020%20Update.pdf) for standardized administration.
 - **SCAP-A (adults)** — the preliminary development evidence involved older adults aged 55–75 and included self-report and family-informant forms. Do not assume validation for all adults aged 18+. [Article and PDF](https://www.journalofhearingscience.com/Screening-checklist-for-auditory-processing-nin-adults-SCAP-A-Development-and-preliminary,120593,0,2.html) · [Later study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10152099/).
 
-Other screening questionnaires and screening-resource panels have been removed from the main interface to keep the workflow focused. This does **not** mean SCAP and SCAP-A are sufficient to diagnose CAPD or are validated for every Indian age group, language or population. Clinicians may still select appropriate diagnostic tests and further assessments based on the referral question, age, language, peripheral audiology, norms and clinical history.
-
-The app's SCAP/SCAP-A wording and scoring remain subject to the limitations described below. Obtain and use the authorised forms and their official instructions for standardized clinical administration. A screening result is not a diagnosis.
+The selector hides child checklist options for adults and the adult checklist option for children when age is entered. This is an interface aid, not an automatic test recommendation. None of these screeners independently diagnoses CAPD. Clinicians must consider the referral question, age, language, peripheral audiology, norms, developmental context and clinical history, and use authorised forms/instructions for standardized administration.
 
 ## English, Hindi and Punjabi interface
 
-The interface language selector offers English, Hindi (हिन्दी) and Punjabi (ਪੰਜਾਬੀ). The app's original supplementary listening prompts and in-app SCAP and SCAP-A prompts, response choices, guidance and live interpretations have Hindi and Punjabi wording; entered answers are preserved when switching languages. Some technical labels may remain in English where appropriate. The downloadable clinical report remains English.
+The interface language selector offers English, Hindi (हिन्दी) and Punjabi (ਪੰਜਾਬੀ). The app's original supplementary listening prompts and in-app SCAP, SCAP-A and child BMQ-R draft prompts, response choices, guidance and live interpretations have Hindi and Punjabi wording; entered answers are preserved when switching languages. Some technical labels may remain in English where appropriate. The downloadable clinical report remains English.
 
 **Important:** the Hindi and Punjabi wording is provided for accessibility and is **not** a validated translation of SCAP or SCAP-A. The in-app prompts are not verified verbatim official items. Do not apply official cutoffs to an unofficial translation. Use the authorised instrument, language/version, administration and scoring instructions.
 
