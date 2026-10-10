@@ -379,6 +379,64 @@ const bmqChildCategories={
 "APD":{en:"Additional / General APD",hi:"अतिरिक्त / सामान्य APD",pa:"ਵਾਧੂ / ਆਮ APD",max:6}
 };
 
+
+function bmqLang(en,hi,pa){return uiLanguage==="hi"?hi:uiLanguage==="pa"?pa:en;}
+function renderBMQChild(){
+ const panel=document.getElementById("bmqChildPanel");if(!panel)return;
+ const show=v("screeningTool")==="BMQ-R"&&path()==="child";panel.hidden=!show;if(!show)return;
+ const old={};panel.querySelectorAll("[data-bmq-id]").forEach(el=>old[el.dataset.bmqId]=el.value);
+ const groups=[
+ {key:"DEC",title:bmqLang("Decoding (DEC)","डिकोडिंग (DEC)","ਡੀਕੋਡਿੰਗ (DEC)")},
+ {key:"TFM-NOI",title:bmqLang("TFM — Noise (NOI)","TFM — शोर (NOI)","TFM — ਸ਼ੋਰ (NOI)")},
+ {key:"TFM-MEM",title:bmqLang("TFM — Memory (MEM)","TFM — स्मृति (MEM)","TFM — ਯਾਦਦਾਸ਼ਤ (MEM)")},
+ {key:"TFM-VAR",title:bmqLang("TFM — Variable (VAR)","TFM — परिवर्तनशील (VAR)","TFM — ਬਦਲਦਾ ਰੂਪ (VAR)")},
+ {key:"INT",title:bmqLang("Integration (INT)","इंटीग्रेशन (INT)","ਇੰਟੀਗ੍ਰੇਸ਼ਨ (INT)")},
+ {key:"ORG",title:bmqLang("Organization (ORG)","ऑर्गनाइज़ेशन (ORG)","ਆਰਗੇਨਾਈਜ਼ੇਸ਼ਨ (ORG)")},
+ {key:"APD",title:bmqLang("Additional / General APD","अतिरिक्त / सामान्य APD","ਵਾਧੂ / ਆਮ APD")}
+ ];
+ const select=(id,opts)=>'<select id="'+id+'" data-bmq-id="'+id+'" style="min-width:180px"><option value="">'+bmqLang("Select response","उत्तर चुनें","ਜਵਾਬ ਚੁਣੋ")+'</option>'+opts.map(o=>'<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>').join("")+'</select>';
+ const therapyOptions=[["current",bmqLang("Yes — currently receiving","हाँ — वर्तमान में","ਹਾਂ — ਇਸ ਵੇਲੇ")],["previous",bmqLang("Yes — received previously","हाँ — पहले प्राप्त की","ਹਾਂ — ਪਹਿਲਾਂ ਲਈ")],["no",bmqLang("No","नहीं","ਨਹੀਂ")],["unknown",bmqLang("Unknown / not recorded","अज्ञात / दर्ज नहीं","ਅਣਜਾਣ / ਦਰਜ ਨਹੀਂ")]];
+ let html='<h3>'+bmqLang("BMQ-R child pathway — item-by-item entry","BMQ-R बाल मार्ग — प्रश्न-दर-प्रश्न प्रविष्टि","BMQ-R ਬੱਚਿਆਂ ਦਾ ਮਾਰਗ — ਸਵਾਲ-ਦਰ-ਸਵਾਲ ਐਂਟਰੀ")+'</h3>'+
+ '<div class="callout warn"><b>'+bmqLang("Important version and scoring note:","महत्वपूर्ण संस्करण और स्कोरिंग सूचना:","ਜ਼ਰੂਰੀ ਸੰਸਕਰਣ ਅਤੇ ਸਕੋਰਿੰਗ ਨੋਟ:")+'</b> '+bmqLang("This is an app-adapted draft based on the prompts supplied for this project, not a verified verbatim reproduction of the current official BMQ-R. Use the official EAA form/manual for standardized administration. The 42 behaviour prompts are scored descriptively (Yes=1, No=0); therapy history is not included in the behaviour total. No official age-norm cutoff is applied here.","यह इस परियोजना के लिए दिए गए प्रश्नों पर आधारित ऐप-अनुकूलित प्रारूप है, वर्तमान आधिकारिक BMQ-R की सत्यापित शब्दशः प्रति नहीं। मानकीकृत प्रशासन के लिए EAA का आधिकारिक फ़ॉर्म/मैनुअल उपयोग करें। 42 व्यवहार-संबंधी प्रश्नों का वर्णनात्मक स्कोर (हाँ=1, नहीं=0) है; थेरेपी इतिहास कुल व्यवहार स्कोर में शामिल नहीं है। यहाँ कोई आधिकारिक आयु-मानक कट-ऑफ लागू नहीं होता।","ਇਹ ਇਸ ਪ੍ਰੋਜੈਕਟ ਲਈ ਦਿੱਤੇ ਸਵਾਲਾਂ 'ਤੇ ਆਧਾਰਿਤ ਐਪ-ਅਨੁਕੂਲਿਤ ਮਸੌਦਾ ਹੈ, ਮੌਜੂਦਾ ਅਧਿਕਾਰਤ BMQ-R ਦੀ ਤਸਦੀਕਸ਼ੁਦਾ ਸ਼ਬਦ-ਬ-ਸ਼ਬਦ ਨਕਲ ਨਹੀਂ। ਮਿਆਰੀ ਪ੍ਰਸ਼ਾਸਨ ਲਈ EAA ਦਾ ਅਧਿਕਾਰਤ ਫਾਰਮ/ਮੈਨੂਅਲ ਵਰਤੋ। 42 ਵਿਹਾਰਕ ਸਵਾਲਾਂ ਦਾ ਵਰਣਨਾਤਮਕ ਸਕੋਰ (ਹਾਂ=1, ਨਹੀਂ=0) ਹੈ; ਥੈਰੇਪੀ ਇਤਿਹਾਸ ਕੁੱਲ ਵਿਹਾਰਕ ਸਕੋਰ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ। ਇੱਥੇ ਕੋਈ ਅਧਿਕਾਰਤ ਉਮਰ-ਨਾਰਮ ਕੱਟ-ਆਫ਼ ਲਾਗੂ ਨਹੀਂ ਹੁੰਦਾ।")+'</div>'+
+ '<p><a href="https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20form%209-2020.pdf" target="_blank" rel="noopener">'+bmqLang("Open official BMQ-R form (PDF)","आधिकारिक BMQ-R फ़ॉर्म खोलें (PDF)","ਅਧਿਕਾਰਤ BMQ-R ਫਾਰਮ ਖੋਲ੍ਹੋ (PDF)")+'</a> · <a href="https://www.edaud.org/assets/docs/Questionnaires/BMQ-R%20Manual%209-2020%20Update.pdf" target="_blank" rel="noopener">'+bmqLang("Open official administration and interpretation manual","आधिकारिक प्रशासन और व्याख्या मैनुअल खोलें","ਅਧਿਕਾਰਤ ਪ੍ਰਸ਼ਾਸਨ ਅਤੇ ਵਿਆਖਿਆ ਮੈਨੂਅਲ ਖੋਲ੍ਹੋ")+'</a> · <a href="https://www.edaud.org/bmqr" target="_blank" rel="noopener">EAA</a></p>'+
+ '<div class="grid two"><div class="field"><label>'+bmqLang("Respondent","उत्तरदाता","ਜਵਾਬਦਾਤਾ")+'</label>'+select("bmqChildRespondent",[["Parent / caregiver",bmqLang("Parent / caregiver","माता-पिता / देखभालकर्ता","ਮਾਤਾ-ਪਿਤਾ / ਦੇਖਭਾਲਕਰਤਾ")],["Teacher",bmqLang("Teacher","शिक्षक","ਅਧਿਆਪਕ")],["Clinician interview",bmqLang("Clinician interview","चिकित्सक साक्षात्कार","ਕਲੀਨੀਸ਼ਨ ਇੰਟਰਵਿਊ")],["Other",bmqLang("Other","अन्य","ਹੋਰ")]])+'</div><div class="field"><label>'+bmqLang("Questionnaire language/version actually used","वास्तव में उपयोग की गई प्रश्नावली भाषा/संस्करण","ਅਸਲ ਵਿੱਚ ਵਰਤੀ ਪ੍ਰਸ਼ਨਾਵਲੀ ਦੀ ਭਾਸ਼ਾ/ਸੰਸਕਰਣ")+'</label><input id="bmqChildVersion" data-bmq-id="bmqChildVersion" placeholder="'+bmqLang("Record version and language","संस्करण और भाषा दर्ज करें","ਸੰਸਕਰਣ ਅਤੇ ਭਾਸ਼ਾ ਦਰਜ ਕਰੋ")+'"></div></div>'+
+ '<h4>'+bmqLang("Background / therapy tracking (not scored)","पृष्ठभूमि / थेरेपी इतिहास (स्कोर में शामिल नहीं)","ਪਿਛੋਕੜ / ਥੈਰੇਪੀ ਇਤਿਹਾਸ (ਸਕੋਰ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ)")+'</h4><p class="help">'+bmqLang("Record whether each service is current, previous, absent or unknown.","हर सेवा वर्तमान में, पहले, नहीं या अज्ञात के रूप में दर्ज करें।","ਹਰ ਸੇਵਾ ਮੌਜੂਦਾ, ਪਹਿਲਾਂ ਲਈ, ਨਹੀਂ ਜਾਂ ਅਣਜਾਣ ਵਜੋਂ ਦਰਜ ਕਰੋ।")+'</p>';
+ bmqTherapyItems.forEach((q,i)=>{html+='<div class="field" style="padding:8px 0;border-bottom:1px solid #d9e0e7"><label for="bmqTherapy'+(i+1)+'">'+(i+1)+'. '+esc(q[uiLanguage==="hi"?1:uiLanguage==="pa"?2:0])+'</label>'+select("bmqTherapy"+(i+1),therapyOptions)+'</div>';});
+ groups.forEach(g=>{
+  html+='<h4>'+esc(g.title)+' <span class="small">('+bmqChildItems.filter(q=>q[0]===g.key).length+')</span></h4>';
+  bmqChildItems.forEach((q,i)=>{if(q[0]!==g.key)return;html+='<div class="field" style="padding:9px 0;border-bottom:1px solid #d9e0e7"><label for="bmqChildItem'+(i+1)+'"><b>'+bmqLang("Item","प्रश्न","ਸਵਾਲ")+' '+(i+7)+'.</b> '+esc(q[uiLanguage==="hi"?2:uiLanguage==="pa"?3:1])+'</label>'+select("bmqChildItem"+(i+1),[["1",bmqLang("Yes — present problem (1)","हाँ — समस्या मौजूद (1)","ਹਾਂ — ਸਮੱਸਿਆ ਮੌਜੂਦ (1)")],["0",bmqLang("No — not a present problem (0)","नहीं — वर्तमान समस्या नहीं (0)","ਨਹੀਂ — ਮੌਜੂਦਾ ਸਮੱਸਿਆ ਨਹੀਂ (0)")]])+'</div>';});
+ });
+ html+='<h4>'+bmqLang("Live descriptive profile","लाइव वर्णनात्मक प्रोफ़ाइल","ਲਾਈਵ ਵਰਣਨਾਤਮਕ ਪ੍ਰੋਫ਼ਾਈਲ")+'</h4><div id="bmqChildResult" class="callout" aria-live="polite"></div>';
+ panel.innerHTML=html;
+ panel.querySelectorAll("[data-bmq-id]").forEach(el=>{if(old[el.dataset.bmqId]!==undefined)el.value=old[el.dataset.bmqId];if(el.tagName==="SELECT")el.addEventListener("change",()=>{updateBMQChildScore();renderWorkflowGuide();});else el.addEventListener("input",renderWorkflowGuide);});
+ updateBMQChildScore();
+}
+function collectBMQChild(){
+ const panel=document.getElementById("bmqChildPanel");
+ if(!panel||v("screeningTool")!=="BMQ-R"||path()!=="child")return {selected:false,answers:[],therapyHistory:[],score:null,interpretation:"Not selected"};
+ const answers=bmqChildItems.map((q,i)=>({item:i+7,category:q[0],question:q[uiLanguage==="hi"?2:uiLanguage==="pa"?3:1],response:v("bmqChildItem"+(i+1))}));
+ const therapyHistory=bmqTherapyItems.map((q,i)=>({item:i+1,therapy:q[uiLanguage==="hi"?1:uiLanguage==="pa"?2:0],status:v("bmqTherapy"+(i+1))}));
+ const completed=answers.every(a=>a.response!=="");
+ const score=answers.reduce((sum,a)=>sum+(a.response==="1"?1:0),0);
+ const categoryScores={};
+ Object.keys(bmqChildCategories).forEach(k=>{const aa=answers.filter(a=>a.category===k);categoryScores[k]={yes:aa.filter(a=>a.response==="1").length,answered:aa.filter(a=>a.response!=="").length,max:aa.length};});
+ const tfmKeys=["TFM-NOI","TFM-MEM","TFM-VAR"],tfmYes=tfmKeys.reduce((n,k)=>n+categoryScores[k].yes,0),tfmMax=tfmKeys.reduce((n,k)=>n+categoryScores[k].max,0);
+ return {selected:true,versionLabel:"App-adapted prompts supplied for this project; not verified as the official BMQ-R wording or scoring structure",respondent:v("bmqChildRespondent"),languageVersion:v("bmqChildVersion"),therapyHistory,therapyComplete:therapyHistory.every(t=>t.status!==""),answers,completed,score:completed?score:null,maxScore:42,categoryScores,tfm:{yes:tfmYes,max:tfmMax},interpretation:!completed?"Incomplete — complete all 42 behaviour responses for a descriptive total":"Descriptive item count only; compare an authorised BMQ-R administration with its current manual and age norms. This app score is not a validated referral threshold or diagnosis"};
+}
+function updateBMQChildScore(){
+ const r=collectBMQChild(),el=document.getElementById("bmqChildResult");if(!el)return;
+ const rows=Object.keys(bmqChildCategories).map(k=>{const c=r.categoryScores[k],meta=bmqChildCategories[k];return '<div style="margin:7px 0"><div style="display:flex;justify-content:space-between;gap:8px"><span>'+esc(meta[uiLanguage==="hi"?"hi":uiLanguage==="pa"?"pa":"en"])+'</span><b>'+c.yes+'/'+c.max+'</b></div><div style="height:7px;background:#e5ebef;border-radius:5px;overflow:hidden"><div style="height:7px;width:'+Math.round(c.max?100*c.yes/c.max:0)+'%;background:#176b87"></div></div></div>';}).join("");
+ const status=!r.completed?bmqLang("Complete all 42 behaviour items to calculate the total. Current category counts are descriptive only.","कुल स्कोर के लिए सभी 42 व्यवहार-संबंधी प्रश्न भरें। श्रेणी के वर्तमान अंक केवल वर्णनात्मक हैं।","ਕੁੱਲ ਸਕੋਰ ਲਈ ਸਾਰੇ 42 ਵਿਹਾਰਕ ਸਵਾਲ ਭਰੋ। ਮੌਜੂਦਾ ਸ਼੍ਰੇਣੀ ਅੰਕ ਸਿਰਫ਼ ਵਰਣਨਾਤਮਕ ਹਨ।"):bmqLang("Completed descriptive count: ","पूरा वर्णनात्मक स्कोर: ","ਪੂਰਾ ਵਰਣਨਾਤਮਕ ਸਕੋਰ: ")+r.score+"/42. "+bmqLang("Do not apply the unverified cutoffs supplied in the project notes as official BMQ-R thresholds.","परियोजना नोट्स में दिए गए अप्रमाणित कट-ऑफ को आधिकारिक BMQ-R सीमा न मानें।","ਪ੍ਰੋਜੈਕਟ ਨੋਟਸ ਵਿੱਚ ਦਿੱਤੇ ਅਪ੍ਰਮਾਣਿਤ ਕੱਟ-ਆਫ਼ ਨੂੰ ਅਧਿਕਾਰਤ BMQ-R ਸੀਮਾ ਨਾ ਮੰਨੋ।");
+ el.innerHTML='<p><b>'+esc(status)+'</b></p>'+rows+'<p class="help">'+bmqLang("TFM subtotal: ","TFM उप-योग: ","TFM ਉਪ-ਜੋੜ: ")+r.tfm.yes+'/'+r.tfm.max+'. '+bmqLang("The six therapy-history responses are recorded separately and excluded from the 42-item behaviour count.","थेरेपी इतिहास के छह उत्तर अलग दर्ज होते हैं और 42-प्रश्न व्यवहार स्कोर में शामिल नहीं हैं।","ਥੈਰੇਪੀ ਇਤਿਹਾਸ ਦੇ ਛੇ ਜਵਾਬ ਵੱਖਰੇ ਦਰਜ ਹੁੰਦੇ ਹਨ ਅਤੇ 42-ਸਵਾਲਾਂ ਦੇ ਵਿਹਾਰਕ ਸਕੋਰ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।")+'</p>';
+}
+function bmqChildReportHTML(r){
+ if(!r||!r.selected)return "";
+ const rows=r.answers.map(a=>'<tr><td>'+a.item+'</td><td>'+esc(bmqChildCategories[a.category]?.en||a.category)+'</td><td>'+esc(a.question)+'</td><td>'+esc(a.response===""?"Not answered":a.response==="1"?"Yes (1)":"No (0)")+'</td></tr>').join("");
+ const therapy=r.therapyHistory.map(t=>'<tr><td>'+esc(t.therapy)+'</td><td>'+esc(({current:"Currently receiving",previous:"Received previously",no:"No",unknown:"Unknown / not recorded"})[t.status]||"Not answered")+'</td></tr>').join("");
+ const categories=Object.keys(bmqChildCategories).map(k=>'<tr><td>'+esc(bmqChildCategories[k].en)+'</td><td>'+r.categoryScores[k].yes+' / '+r.categoryScores[k].max+'</td></tr>').join("");
+ return '<h3>BMQ-R child pathway — app-adapted item set</h3><p><b>Version note:</b> '+esc(r.versionLabel)+'. <b>Respondent:</b> '+esc(r.respondent||"Not recorded")+'; <b>language/version:</b> '+esc(r.languageVersion||"Not recorded")+'</p><p><b>Descriptive behaviour count:</b> '+esc(r.score===null?"Incomplete":r.score+"/42")+'; <b>TFM subtotal:</b> '+r.tfm.yes+'/'+r.tfm.max+'. <b>Interpretation:</b> '+esc(r.interpretation)+'</p><table><tr><th>Category</th><th>Yes / max</th></tr>'+categories+'</table><h4>Therapy history (not scored)</h4><table><tr><th>Service</th><th>Status</th></tr>'+therapy+'</table><h4>Behaviour item responses</h4><table><tr><th>Item</th><th>Category</th><th>Prompt</th><th>Response</th></tr>'+rows+'</table><p class="small">Use the official EAA BMQ-R form/manual for standardized administration and interpretation. The app-adapted set and raw counts are not validated clinical cutoffs.</p>';
+}
+
 function renderSCAP(){
  const panel=document.getElementById("scapPanel");if(!panel)return;
  const show=v("screeningTool")==="SCAP";panel.hidden=!show;if(!show)return;
