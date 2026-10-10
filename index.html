@@ -162,9 +162,14 @@ pa:["ਸਿਰਫ਼ ਕਲੀਨੀਸ਼ਨ ਵੱਲੋਂ ਚੁਣੇ ਅ�
 function stimulusLang(){return uiLanguage==="hi"?"hi":uiLanguage==="pa"?"pa":"en";}
 function stimMsg(en,hi,pa){return uiLanguage==="hi"?hi:uiLanguage==="pa"?pa:en;}
 
+const stimulusSubstituteNotes={
+speechnoise:{en:"Added substitute: mixes your locally selected authorised speech recording with generated white noise. The mix is not calibrated SNR and has no clinical norms.",hi:"जोड़ा गया विकल्प: स्थानीय अधिकृत वाणी रिकॉर्डिंग को बनाए गए सफेद शोर के साथ मिलाता है। यह कैलिब्रेटेड SNR नहीं है और इसके क्लिनिकल मानक नहीं हैं।",pa:"ਨਵਾਂ ਬਦਲ: ਸਥਾਨਕ ਅਧਿਕਾਰਤ ਬੋਲੀ ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਬਣਾਏ ਚਿੱਟੇ ਸ਼ੋਰ ਨਾਲ ਮਿਲਾਉਂਦਾ ਹੈ। ਇਹ ਕੈਲੀਬਰੇਟ ਕੀਤਾ SNR ਨਹੀਂ ਅਤੇ ਇਸ ਦੇ ਕਲੀਨੀਕਲ ਨਾਰਮ ਨਹੀਂ ਹਨ।"},
+localization:{en:"Added substitute: randomized left/center/right virtual stereo panning. Use verified stereo headphones; this is lateralization familiarisation, not real-world sound localization.",hi:"जोड़ा गया विकल्प: बाएँ/बीच/दाएँ वर्चुअल स्टीरियो पैनिंग। सत्यापित स्टीरियो हेडफोन उपयोग करें; यह केवल परिचय है, वास्तविक ध्वनि-दिशा परीक्षण नहीं।",pa:"ਨਵਾਂ ਬਦਲ: ਖੱਬੇ/ਵਿਚਕਾਰ/ਸੱਜੇ ਵਰਚੁਅਲ ਸਟੀਰੀਓ ਪੈਨਿੰਗ। ਤਸਦੀਕ ਕੀਤੇ ਸਟੀਰੀਓ ਹੈੱਡਫ਼ੋਨ ਵਰਤੋ; ਇਹ ਸਿਰਫ਼ ਜਾਣ-ਪਛਾਣ ਹੈ, ਅਸਲ ਆਵਾਜ਼-ਦਿਸ਼ਾ ਟੈਸਟ ਨਹੀਂ।"},
+binaural:{en:"Added substitute: tone-in-correlated-noise demonstration with tone present/absent and nominal S0/Sπ phase. This illustrates the MLD principle only; it is not the official MLD procedure.",hi:"जोड़ा गया विकल्प: correlated noise में टोन मौजूद/अनुपस्थित और नाममात्र S0/Sπ फेज़ का प्रदर्शन। यह केवल MLD सिद्धांत दिखाता है, आधिकारिक MLD प्रक्रिया नहीं।",pa:"ਨਵਾਂ ਬਦਲ: correlated noise ਵਿੱਚ ਟੋਨ ਮੌਜੂਦ/ਗੈਰ-ਮੌਜੂਦ ਅਤੇ ਨਾਮਾਤਰ S0/Sπ ਫੇਜ਼ ਦਾ ਡੈਮੋ। ਇਹ ਸਿਰਫ਼ MLD ਸਿਧਾਂਤ ਦਿਖਾਉਂਦਾ ਹੈ, ਅਧਿਕਾਰਤ MLD ਪ੍ਰਕਿਰਿਆ ਨਹੀਂ।"}
+};
 function renderStimulusGuide(){
  const key=document.getElementById("stimulusType").value,lang=stimulusLang(),g=stimulusGuideText[key][lang]||stimulusGuideText[key].en;
- document.getElementById("stimulusGuide").innerHTML="<b>"+esc(g[0])+"</b><p>"+esc(g[1])+"</p><p>"+esc(g[2])+"</p>";
+ const supplement=stimulusSubstituteNotes[key];document.getElementById("stimulusGuide").innerHTML="<b>"+esc(g[0])+"</b><p>"+esc(g[1])+"</p><p>"+esc(g[2])+"</p>"+(supplement?"<p><b>"+esc(stimMsg("Phone pilot substitute:", "फोन पायलट विकल्प:", "ਫ਼ੋਨ ਪਾਇਲਟ ਬਦਲ:"))+"</b> "+esc(supplement[lang]||supplement.en)+"</p>":"");
  const canGenerate=["discrimination","pattern","gap","dichotic","speechnoise","localization","binaural"].includes(key);
  document.getElementById("generateStimulus").disabled=!canGenerate;
  document.getElementById("generateStimulus").textContent=canGenerate?({en:"Generate and play pilot stimulus",hi:"पायलट स्टिम्युलस बनाएँ और चलाएँ",pa:"ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਬਣਾਓ ਅਤੇ ਚਲਾਓ"}[lang]):({en:"No generated stimulus for this task",hi:"इस कार्य के लिए स्टिम्युलस नहीं बनाया जाता",pa:"ਇਸ ਕੰਮ ਲਈ ਸਟਿਮੁਲਸ ਨਹੀਂ ਬਣਾਇਆ ਜਾਂਦਾ"}[lang]);
@@ -187,7 +192,7 @@ async function playGeneratedStimulus(type){
  const nodes=[];
  function tone(freq,at,dur,pan=0,phase=0,level=0.10){
   const osc=ctx.createOscillator(),gain=ctx.createGain(),panner=ctx.createStereoPanner?ctx.createStereoPanner():null;
-  osc.type="sine";osc.frequency.value=freq;osc.phase=phase;
+  osc.type="sine";osc.frequency.value=freq;
   gain.gain.setValueAtTime(0,at);gain.gain.linearRampToValueAtTime(level,at+0.012);gain.gain.setValueAtTime(level,at+Math.max(0.02,dur-0.015));gain.gain.linearRampToValueAtTime(0,at+dur);
   osc.connect(gain);if(panner){panner.pan.value=pan;gain.connect(panner);panner.connect(ctx.destination);}else gain.connect(ctx.destination);
   osc.start(at);osc.stop(at+dur+0.01);nodes.push(osc);
