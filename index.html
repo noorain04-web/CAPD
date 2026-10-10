@@ -272,7 +272,7 @@ function applyDictionaryToDOM(dict){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  while(walker.nextNode()){
   const n=walker.currentNode;
-  if(n.parentElement&&n.parentElement.closest("script,style"))continue;
+  if(n.parentElement&&(n.parentElement.closest("script,style")||n.parentElement.closest("option")))continue;
   if(!originalTextNodes.has(n))originalTextNodes.set(n,n.nodeValue);
   const original=originalTextNodes.get(n),trim=original.trim();
   n.nodeValue=dict&&dict[trim]?original.replace(trim,dict[trim]):original;
