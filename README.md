@@ -50,7 +50,7 @@ BMQ-R is not an India-specific instrument. Do not imply that its English-languag
 
 ## English, Hindi and Punjabi interface
 
-The interface language selector offers English, Hindi (हिन्दी) and Punjabi (ਪੰਜਾਬੀ). The app's original supplementary listening prompts have Hindi and Punjabi wording, and responses are preserved when switching languages. Some technical labels and content may remain in English where no translation is available. The downloadable clinical report remains English.
+The interface language selector offers English, Hindi (हिन्दी) and Punjabi (ਪੰਜਾਬੀ). The app's original supplementary listening prompts and the in-app SCAP and SCAP-A questionnaire prompts, response choices, guidance and live interpretations have Hindi and Punjabi wording; entered answers are preserved when switching languages. The BMQ-R category-entry workflow and its dynamic score feedback are also translated. Some technical labels may remain in English where appropriate. The downloadable clinical report remains English.
 
 **Important:** these are interface translations and translations of original, non-standardized supplementary history prompts only. They are **not** validated Hindi or Punjabi versions of BMQ-R, SCAP, SCAP-A, STAP or APDQ. Do not translate standardized item wording yourself or apply the original cut-offs to an unofficial translation. Use the official instrument, authorised language/version, administration and scoring instructions.
 
