@@ -77,3 +77,13 @@ The Central Auditory Test Results panel includes a phone stimulus lab with:
 These are **not standardized CAPD tests**, do not reproduce official Dichotic Digits, Pitch Pattern Sequence, GIN/RGDT, MLD, or speech-in-noise test items, and do not provide clinical norms or diagnostic thresholds. Phone output level, transducer frequency response, channel routing, room noise and device variability are not calibrated by this app. The dichotic demo requires stereo headphones and a verified left/right channel; a phone loudspeaker or mono route is unsuitable. For localization, binaural interaction/MLD, speech-in-noise and other standardized measures, use the authorised stimulus set, its exact manual, the appropriate calibrated equipment and age/language-specific norms. A local audio file is played only in the browser and is not uploaded to a server.
 
 Reference links in the interface include ASHA's CAPD Practice Portal, the VA NCRAR overview of auditory processing measures, a GitHub temporal-processing training/demo project (EarSync; not a diagnostic test), the UCL HeadphoneCheck research task (not a CAPD test), and a published tablet-based CAP assessment study. Reuse any external code or audio only after checking its license, intended use and study protocol.
+
+
+### Additional original pilot substitutes
+
+The stimulus lab also provides original, non-standardized demonstrations for auditory domains that previously only had instructions:
+- **Speech-in-noise feasibility demo:** plays an authorised local speech recording mixed with generated white noise. The slider controls digital noise gain only, not calibrated SNR. Record file/version/language and the nominal mix; do not apply standard speech-in-noise norms.
+- **Virtual lateralization demo:** randomizes a tone's left/center/right stereo pan for verified headphones. This is not real-world sound localization and is not a clinical localization substitute.
+- **Binaural phase demonstration:** presents a tone as present or absent in correlated noise with a nominal S0/Sπ phase relationship. It illustrates the concept behind masking-level differences, but is not the official MLD procedure and has no threshold or norms.
+
+All three tasks log descriptive responses in the case report and JSON. They are pilot/familiarisation demonstrations only. Browser audio output, channel routing, transducer response, room acoustics, signal level and timing are not clinically calibrated. Do not use these tasks to diagnose, rule out, or assign severity to CAPD.
