@@ -63,3 +63,17 @@ When **SCAP-A** is selected, the screening panel provides 12 adult symptom promp
 
 Possible follow-up domains include speech-in-noise / monaural low-redundancy speech, dichotic listening, temporal processing (such as gap detection), and binaural interaction. This list is illustrative rather than a mandatory test battery.
 
+
+## Phone stimulus lab (pilot / research use only)
+
+The Central Auditory Test Results panel includes a phone stimulus lab with:
+- Original two-tone same/different practice trials.
+- Original three-tone low/high pattern practice.
+- A short-gap-in-noise demonstration.
+- A stereo left/right tone routing demonstration.
+- Local playback of clinician-provided authorised audio for speech-in-noise, degraded-speech, or other tasks.
+- An observation log that is included in the case JSON and clinical report.
+
+These are **not standardized CAPD tests**, do not reproduce official Dichotic Digits, Pitch Pattern Sequence, GIN/RGDT, MLD, or speech-in-noise test items, and do not provide clinical norms or diagnostic thresholds. Phone output level, transducer frequency response, channel routing, room noise and device variability are not calibrated by this app. The dichotic demo requires stereo headphones and a verified left/right channel; a phone loudspeaker or mono route is unsuitable. For localization, binaural interaction/MLD, speech-in-noise and other standardized measures, use the authorised stimulus set, its exact manual, the appropriate calibrated equipment and age/language-specific norms. A local audio file is played only in the browser and is not uploaded to a server.
+
+Reference links in the interface include ASHA's CAPD Practice Portal, the VA NCRAR overview of auditory processing measures, a GitHub temporal-processing training/demo project (EarSync; not a diagnostic test), the UCL HeadphoneCheck research task (not a CAPD test), and a published tablet-based CAP assessment study. Reuse any external code or audio only after checking its license, intended use and study protocol.
