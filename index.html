@@ -124,6 +124,7 @@ function renderQ(){
  return '<div class="qrow"><label for="q'+i+'"><b>'+(i+1)+'. '+esc(title)+'</b><br>'+esc(desc)+'</label><select id="q'+i+'" data-domain="'+esc(q[0])+'">'+opts.map((o,j)=>'<option value="'+esc(o[0])+'" '+((prior[i]||"Not answered")===o[0]?'selected':'')+'>'+esc(uiLanguage==="hi"?o[1]:uiLanguage==="pa"?( {"Not answered":"ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ","Never / rarely":"ਕਦੇ ਨਹੀਂ / ਬਹੁਤ ਘੱਟ","Sometimes":"ਕਦੇ-ਕਦੇ","Often":"ਅਕਸਰ","Unable to judge":"ਅੰਦਾਜ਼ਾ ਨਹੀਂ ਲਗਾ ਸਕਦੇ"}[o[0]]||o[0]):o[0])+'</option>').join("")+'</select></div>';}).join("");
 }
 const phoneStimulusRecords=[];
+let uiLanguage="en";
 let stimulusAudioContext=null,stimulusNodes=[],uploadedAudio=null,uploadedAudioUrl=null,currentStimulusMeta=null;
 const stimulusGuideText={
 discrimination:{
@@ -392,7 +393,6 @@ function reportDoc(){if(!document.getElementById("preview").dataset.report)gener
 function download(name,content,type){let a=document.createElement("a"),u=URL.createObjectURL(new Blob([content],{type:type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 document.getElementById("download").onclick=()=>download("CAPD_Report_"+(v("code")||"patient")+".html",reportDoc(),"text/html;charset=utf-8");document.getElementById("pdf").onclick=()=>{if(!document.getElementById("preview").dataset.report)generate();go("report");window.print();};document.getElementById("json").onclick=()=>download("CAPD_Data_"+(v("code")||"patient")+".json",JSON.stringify(data(),null,2),"application/json");
 
-let uiLanguage="en";
 const hindiText={
 "Case history · functional listening screening · audiology test entry · differential considerations · management plan · downloadable report":"केस इतिहास · सुनने की कार्यात्मक स्क्रीनिंग · ऑडियोलॉजी परीक्षण · विभेदक विचार · प्रबंधन योजना · डाउनलोड करने योग्य रिपोर्ट",
 "CAPD Clinical Decision-Support":"CAPD नैदानिक निर्णय-सहायता",
