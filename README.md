@@ -64,3 +64,9 @@ The Screening tab has a selectable tool guide:
 - **SCAP-A** — evidence is primarily from older adults, including ages 55–75; do not assume it is validated for all adults.
 
 The selector provides age-based guidance, not an automatic test choice. There is no universally accepted CAPD screening questionnaire for every adult. The app links to official or research sources and does not reproduce copyrighted or author-controlled standardized item text.
+
+## SCAP checklist entry and scoring
+
+When **SCAP** is selected in the screening-tool selector, the app displays a 12-item yes/no checklist, a selectable threshold (6 or 7), a live total, an at-risk / below-threshold / incomplete interpretation, and a list of possible follow-up assessment domains. The responses and interpretation are included in the generated clinical report and JSON export.
+
+**Clinical validity note:** the in-app prompts are adapted from the item descriptions supplied for this prototype and have not been verified as verbatim official SCAP wording. The in-app scoring is a descriptive aid using Yes = 1 and No = 0, not a substitute for official SCAP administration/scoring. The literature reports a score threshold of 6 or greater in some uses, but clinicians must verify the authorised checklist, scoring direction and local protocol. A positive screen is not a CAPD diagnosis; a low score does not rule out the need for assessment when clinically indicated. Hindi/Punjabi translations are not validated versions of SCAP.
