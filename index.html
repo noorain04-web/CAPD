@@ -68,6 +68,7 @@
 <option value="other">Other clinician-selected task — load authorised audio</option>
 </select></div>
 <div class="field"><label for="stimulusFile">Local audio file (optional; remains on this device)</label><input id="stimulusFile" type="file" accept="audio/*"><p class="small" id="stimulusFileName">No file selected.</p></div>
+<div class="field"><label for="noiseMixLevel">Background noise mix (digital gain only; not calibrated SNR)</label><input id="noiseMixLevel" type="range" min="0" max="100" step="5" value="25"><p class="small"><span id="noiseMixValue">25%</span> noise mix for the local speech-file demo. This control is not a dB HL or validated SNR control.</p></div>
 </div>
 <div class="callout" id="stimulusGuide" aria-live="polite"></div>
 <div class="actions"><button type="button" class="btn" id="generateStimulus">Generate and play pilot stimulus</button><button type="button" class="btn secondary" id="playUploadedStimulus">Play selected audio</button><button type="button" class="btn secondary" id="stopStimulus">Stop audio</button></div>
@@ -164,9 +165,10 @@ function stimMsg(en,hi,pa){return uiLanguage==="hi"?hi:uiLanguage==="pa"?pa:en;}
 function renderStimulusGuide(){
  const key=document.getElementById("stimulusType").value,lang=stimulusLang(),g=stimulusGuideText[key][lang]||stimulusGuideText[key].en;
  document.getElementById("stimulusGuide").innerHTML="<b>"+esc(g[0])+"</b><p>"+esc(g[1])+"</p><p>"+esc(g[2])+"</p>";
- const canGenerate=["discrimination","pattern","gap","dichotic"].includes(key);
+ const canGenerate=["discrimination","pattern","gap","dichotic","speechnoise","localization","binaural"].includes(key);
  document.getElementById("generateStimulus").disabled=!canGenerate;
  document.getElementById("generateStimulus").textContent=canGenerate?({en:"Generate and play pilot stimulus",hi:"पायलट स्टिम्युलस बनाएँ और चलाएँ",pa:"ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਬਣਾਓ ਅਤੇ ਚਲਾਓ"}[lang]):({en:"No generated stimulus for this task",hi:"इस कार्य के लिए स्टिम्युलस नहीं बनाया जाता",pa:"ਇਸ ਕੰਮ ਲਈ ਸਟਿਮੁਲਸ ਨਹੀਂ ਬਣਾਇਆ ਜਾਂਦਾ"}[lang]);
+ document.getElementById("noiseMixValue").textContent=document.getElementById("noiseMixLevel").value+"%";
 }
 function stopStimulusAudio(){
  if(uploadedAudio){uploadedAudio.pause();uploadedAudio.currentTime=0;}
@@ -174,15 +176,19 @@ function stopStimulusAudio(){
  stimulusNodes=[];
  if(stimulusAudioContext){try{stimulusAudioContext.close();}catch(e){}stimulusAudioContext=null;}
 }
-function playGeneratedStimulus(type){
+async function playGeneratedStimulus(type){
  stopStimulusAudio();
  const AC=window.AudioContext||window.webkitAudioContext;
  if(!AC){document.getElementById("stimulusStatus").textContent=stimMsg("Web Audio is not supported in this browser.","इस ब्राउज़र में Web Audio समर्थित नहीं है।","ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ Web Audio ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।");return;}
+ if(type==="speechnoise"&&!document.getElementById("stimulusFile").files?.[0]){
+  document.getElementById("stimulusStatus").textContent=stimMsg("Select an authorised local speech recording first.","पहले अधिकृत स्थानीय वाणी रिकॉर्डिंग चुनें।","ਪਹਿਲਾਂ ਅਧਿਕਾਰਤ ਸਥਾਨਕ ਬੋਲੀ ਰਿਕਾਰਡਿੰਗ ਚੁਣੋ।");return;
+ }
  const ctx=stimulusAudioContext=new AC(),start=ctx.currentTime+0.12;
  const nodes=[];
- function tone(freq,at,dur,pan=0){
+ function tone(freq,at,dur,pan=0,phase=0,level=0.10){
   const osc=ctx.createOscillator(),gain=ctx.createGain(),panner=ctx.createStereoPanner?ctx.createStereoPanner():null;
-  osc.type="sine";osc.frequency.value=freq;gain.gain.setValueAtTime(0,at);gain.gain.linearRampToValueAtTime(0.10,at+0.012);gain.gain.setValueAtTime(0.10,at+Math.max(0.02,dur-0.015));gain.gain.linearRampToValueAtTime(0,at+dur);
+  osc.type="sine";osc.frequency.value=freq;osc.phase=phase;
+  gain.gain.setValueAtTime(0,at);gain.gain.linearRampToValueAtTime(level,at+0.012);gain.gain.setValueAtTime(level,at+Math.max(0.02,dur-0.015));gain.gain.linearRampToValueAtTime(0,at+dur);
   osc.connect(gain);if(panner){panner.pan.value=pan;gain.connect(panner);panner.connect(ctx.destination);}else gain.connect(ctx.destination);
   osc.start(at);osc.stop(at+dur+0.01);nodes.push(osc);
  }
@@ -204,8 +210,40 @@ function playGeneratedStimulus(type){
  }else if(type==="dichotic"){
   tone(700,start,0.5,-1);tone(1200,start,0.5,1);
   descriptor="Simultaneous 700 Hz left / 1200 Hz right, 500 ms; stereo routing demo only, not a dichotic clinical test.";
+ }else if(type==="localization"){
+  const choices=[{name:"left",pan:-1},{name:"center",pan:0},{name:"right",pan:1}],choice=choices[Math.floor(Math.random()*choices.length)];
+  tone(700,start,0.45,choice.pan,0,0.08);
+  descriptor="Virtual stereo pan demonstration; target position="+choice.name+"; use verified stereo headphones. Not a clinical localization test.";
+ }else if(type==="binaural"){
+  const present=Math.random()<0.7,phase=Math.random()<0.5?"S0":"Sπ",sr=ctx.sampleRate,dur=1.6,n=Math.floor(sr*dur),buf=ctx.createBuffer(2,n,sr),left=buf.getChannelData(0),right=buf.getChannelData(1),f=500;
+  for(let i=0;i<n;i++){
+   const noise=(Math.random()*2-1)*0.025;
+   left[i]=noise;right[i]=noise;
+   const env=Math.min(1,i/(sr*0.03),(n-i)/(sr*0.03));
+   if(present){const sig=0.035*Math.sin(2*Math.PI*f*i/sr)*Math.max(0,env);left[i]+=sig;right[i]+=(phase==="S0"?sig:-sig);}
+  }
+  const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start(start);nodes.push(src);
+  descriptor="Original binaural detection demonstration; tone "+(present?"present":"absent")+", nominal phase condition "+phase+", 500 Hz tone in correlated noise. Not a calibrated MLD test.";
+ }else if(type==="speechnoise"){
+  const file=document.getElementById("stimulusFile").files[0];
+  try{
+   const audioBuffer=await ctx.decodeAudioData(await file.arrayBuffer());
+   const src=ctx.createBufferSource();src.buffer=audioBuffer;
+   const speechGain=ctx.createGain();speechGain.gain.value=0.8;src.connect(speechGain);speechGain.connect(ctx.destination);src.start(start);nodes.push(src);
+   const sr=ctx.sampleRate,n=Math.ceil(audioBuffer.duration*sr),noiseBuffer=ctx.createBuffer(1,n,sr),a=noiseBuffer.getChannelData(0);
+   for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*0.22;
+   const noiseSrc=ctx.createBufferSource(),noiseGain=ctx.createGain();noiseSrc.buffer=noiseBuffer;
+   const mix=Number(document.getElementById("noiseMixLevel").value)/100;
+   noiseGain.gain.value=mix;noiseSrc.connect(noiseGain);noiseGain.connect(ctx.destination);noiseSrc.start(start);nodes.push(noiseSrc);
+   descriptor="Local speech recording + generated white noise; noise gain "+Math.round(mix*100)+"% digital mix. This is not calibrated SNR or a standardized speech-in-noise test.";
+  }catch(e){
+   document.getElementById("stimulusStatus").textContent=stimMsg("Could not decode this audio file. Try a common browser-supported audio format.","यह ऑडियो फ़ाइल नहीं खुल सकी। ब्राउज़र द्वारा समर्थित सामान्य ऑडियो फ़ॉर्मेट आज़माएँ।","ਇਹ ਆਡੀਓ ਫ਼ਾਈਲ ਡੀਕੋਡ ਨਹੀਂ ਹੋਈ। ਬ੍ਰਾਊਜ਼ਰ ਵੱਲੋਂ ਸਮਰਥਿਤ ਆਮ ਆਡੀਓ ਫ਼ਾਰਮੈਟ ਅਜ਼ਮਾਓ।");
+   try{ctx.close();}catch(_e){}stimulusAudioContext=null;return;
+  }
+ }else{
+  document.getElementById("stimulusStatus").textContent=stimMsg("Load the authorised audio or choose one of the pilot tasks.","अधिकृत ऑडियो लोड करें या कोई पायलट कार्य चुनें।","ਅਧਿਕਾਰਤ ਆਡੀਓ ਲੋਡ ਕਰੋ ਜਾਂ ਪਾਇਲਟ ਕੰਮ ਚੁਣੋ।");try{ctx.close();}catch(_e){}stimulusAudioContext=null;return;
  }
- stimulusNodes=nodes;currentStimulusMeta={type,descriptor,playedAt:new Date().toISOString(),source:"app-generated pilot stimulus"};
+ stimulusNodes=nodes;currentStimulusMeta={type,descriptor,playedAt:new Date().toISOString(),source:type==="speechnoise"?"clinician-provided local speech + app-generated noise":"app-generated pilot stimulus"};
  document.getElementById("stimulusCondition").value=descriptor;
  document.getElementById("stimulusStatus").textContent=stimMsg("Pilot stimulus played. Enter the participant's response and save the observation. This is not a clinical score.","पायलट स्टिम्युलस चल गया। प्रतिभागी का उत्तर दर्ज करके अवलोकन सहेजें। यह क्लिनिकल स्कोर नहीं है।","ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਚੱਲ ਗਿਆ। ਭਾਗੀਦਾਰ ਦਾ ਜਵਾਬ ਦਰਜ ਕਰਕੇ ਨਿਰੀਖਣ ਸੰਭਾਲੋ। ਇਹ ਕਲੀਨੀਕਲ ਸਕੋਰ ਨਹੀਂ ਹੈ।");
  ctx.resume().catch(()=>{});
@@ -217,6 +255,7 @@ function renderStimulusRecords(){
  const body=document.querySelector("#stimulusRecords tbody");
  body.innerHTML=phoneStimulusRecords.map(r=>"<tr><td>"+esc(r.task)+"</td><td>"+esc(r.stimulus)+"</td><td>"+esc(r.response||"Not recorded")+"</td><td>"+esc(r.notes||"")+"</td></tr>").join("");
 }
+document.getElementById("noiseMixLevel").addEventListener("input",e=>{document.getElementById("noiseMixValue").textContent=e.target.value+"%";});
 document.getElementById("stimulusType").addEventListener("change",renderStimulusGuide);
 document.getElementById("generateStimulus").addEventListener("click",()=>playGeneratedStimulus(document.getElementById("stimulusType").value));
 document.getElementById("stopStimulus").addEventListener("click",()=>{stopStimulusAudio();document.getElementById("stimulusStatus").textContent=stimMsg("Audio stopped.","ऑडियो रोक दिया गया।","ਆਡੀਓ ਰੋਕ ਦਿੱਤਾ ਗਿਆ।");});
