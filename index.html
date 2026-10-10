@@ -202,8 +202,8 @@ async function playGeneratedStimulus(type){
  if(type==="speechnoise"&&!document.getElementById("stimulusFile").files?.[0]){
   document.getElementById("stimulusStatus").textContent=stimMsg("Select an authorised local speech recording first.","पहले अधिकृत स्थानीय वाणी रिकॉर्डिंग चुनें।","ਪਹਿਲਾਂ ਅਧਿਕਾਰਤ ਸਥਾਨਕ ਬੋਲੀ ਰਿਕਾਰਡਿੰਗ ਚੁਣੋ।");return;
  }
- const ctx=stimulusAudioContext=new AC(),start=ctx.currentTime+0.12;
- const nodes=[];
+ if(type==="spin"&&!window.speechSynthesis){document.getElementById("stimulusStatus").textContent=stimMsg("Speech playback is unavailable in this browser. Use an authorised local recording instead.","इस ब्राउज़र में वाणी प्लेबैक उपलब्ध नहीं है। इसके बजाय अधिकृत स्थानीय रिकॉर्डिंग उपयोग करें।","ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਬੋਲੀ ਪਲੇਬੈਕ ਉਪਲਬਧ ਨਹੀਂ। ਇਸ ਦੀ ਥਾਂ ਅਧਿਕਾਰਤ ਸਥਾਨਕ ਰਿਕਾਰਡਿੰਗ ਵਰਤੋ।");return;}
+ const ctx=stimulusAudioContext=new AC(),start=ctx.currentTime+0.12,nodes=[];
  function tone(freq,at,dur,pan=0,phase=0,level=0.10){
   const osc=ctx.createOscillator(),gain=ctx.createGain(),panner=ctx.createStereoPanner?ctx.createStereoPanner():null;
   osc.type="sine";osc.frequency.value=freq;
@@ -211,38 +211,55 @@ async function playGeneratedStimulus(type){
   osc.connect(gain);if(panner){panner.pan.value=pan;gain.connect(panner);panner.connect(ctx.destination);}else gain.connect(ctx.destination);
   osc.start(at);osc.stop(at+dur+0.01);nodes.push(osc);
  }
- let descriptor="";
+ let descriptor="",targetKey="",stimulusText="",speechVoiceAvailable=true;
  if(type==="discrimination"){
   const same=Math.random()<0.5,f1=700,f2=same?700:(Math.random()<0.5?850:1000);
   tone(f1,start,0.32);tone(f2,start+0.58,0.32);
-  descriptor="Two tones; pair is "+(same?"same frequency":"different frequency")+"; 700 Hz and "+f2+" Hz.";
+  descriptor="Original two-tone same/different practice; "+(same?"same frequency":"different frequency")+"; 700 Hz and "+f2+" Hz. Not a standardized test sequence.";
  }else if(type==="pattern"){
   const seq=Array.from({length:3},()=>Math.random()<0.5?"L":"H");
-  seq.forEach((s,i)=>tone(s==="L"?700:1200,start+i*0.43,0.22));
-  descriptor="Three-tone pattern, 700/1200 Hz, 220 ms each; sequence key="+seq.join("-")+" (pilot only).";
+  seq.forEach((v,i)=>tone(v==="L"?880:1122,start+i*0.40,0.20));
+  descriptor="Three-tone pitch-pattern practice, 880/1122 Hz, 200 ms tones with 200 ms onset spacing; sequence key="+seq.join("-")+" (one trial only, not a full standardized FPT).";
  }else if(type==="gap"){
-  const hasGap=Math.random()<0.7,gapMs=[4,6,8,10,12,16][Math.floor(Math.random()*6)],sr=ctx.sampleRate,n=Math.floor(sr*1.2),buf=ctx.createBuffer(1,n,sr),a=buf.getChannelData(0),gapStart=Math.floor(sr*0.59),gapLen=hasGap?Math.round(sr*gapMs/1000):0;
-  for(let i=0;i<n;i++){a[i]=(Math.random()*2-1)*0.035;if(i<sr*0.02||i>n-sr*0.02)a[i]*=0.25;}
-  for(let i=gapStart;i<gapStart+gapLen;i++)a[i]=0;
-  const src=ctx.createBufferSource(),gain=ctx.createGain();src.buffer=buf;gain.gain.value=1;src.connect(gain);gain.connect(ctx.destination);src.start(start);nodes.push(src);
-  descriptor="Noise burst 1.2 s; "+(hasGap?"gap present, "+gapMs+" ms":"no gap")+"; original pilot stimulus, not GIN/RGDT.";
+  const sr=ctx.sampleRate,segmentSec=6,isiSec=5,gapDurations=[2,3,4,5,6,8,10,12,15,20],events=[];
+  gapDurations.forEach(ms=>{for(let k=0;k<6;k++)events.push(ms);});
+  for(let i=events.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[events[i],events[j]]=[events[j],events[i]];}
+  const segmentCount=36,segments=Array.from({length:segmentCount},()=>[]);
+  events.forEach(ms=>{const eligible=segments.map((a,i)=>({a,i})).filter(x=>x.a.length<3);eligible[Math.floor(Math.random()*eligible.length)].a.push(ms);});
+  segments.forEach((gaps,idx)=>{
+   const n=Math.floor(sr*segmentSec),buf=ctx.createBuffer(1,n,sr),a=buf.getChannelData(0);
+   for(let i=0;i<n;i++)a[i]=(Math.random()*2-1)*0.035;
+   const positions=[];
+   gaps.forEach(ms=>{let pos,tries=0;do{pos=0.35+Math.random()*(segmentSec-0.7-ms/1000);tries++;}while(positions.some(p=>Math.abs(p-pos)<0.25)&&tries<100);positions.push(pos);const at=Math.round(pos*sr),len=Math.max(1,Math.round(sr*ms/1000));for(let j=at;j<Math.min(n,at+len);j++)a[j]=0;});
+   const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start(start+idx*(segmentSec+isiSec));nodes.push(src);
+  });
+  gapTapCount=0;gapProtocolActive=true;document.getElementById("gapHitButton").hidden=false;
+  const total=segmentCount*segmentSec+(segmentCount-1)*isiSec;
+  for(let idx=0;idx<segmentCount;idx++){stimulusTimers.push(setTimeout(()=>{if(gapProtocolActive)document.getElementById("stimulusStatus").textContent=stimMsg("Gap-list segment "+(idx+1)+" / "+segmentCount+"; tap “I heard a gap” whenever you perceive one. No automatic scoring.","गैप सूची खंड "+(idx+1)+" / "+segmentCount+"; गैप सुनाई देने पर “गैप सुनाई दिया” दबाएँ। स्वचालित स्कोर नहीं है।","ਗੈਪ-ਸੂਚੀ ਖੰਡ "+(idx+1)+" / "+segmentCount+"; ਗੈਪ ਸੁਣਨ 'ਤੇ “ਗੈਪ ਸੁਣਿਆ” ਦਬਾਓ। ਆਪਣੇ ਆਪ ਸਕੋਰ ਨਹੀਂ ਬਣਦਾ।");},idx*(segmentSec+isiSec)*1000));}
+  stimulusTimers.push(setTimeout(()=>{gapProtocolActive=false;document.getElementById("gapHitButton").hidden=true;document.getElementById("stimulusResponse").value="Participant gap taps: "+gapTapCount+" (descriptive only; 60 gap events in generated 36-segment list; not clinically scored).";document.getElementById("stimulusStatus").textContent=stimMsg("Gap-list demo complete. Record the tap count as a descriptive observation only.","गैप सूची प्रदर्शन पूरा। टैप संख्या केवल वर्णनात्मक अवलोकन के रूप में दर्ज करें।","ਗੈਪ-ਸੂਚੀ ਡੈਮੋ ਪੂਰਾ। ਟੈਪ ਗਿਣਤੀ ਸਿਰਫ਼ ਵਰਣਨਾਤਮਕ ਨਿਰੀਖਣ ਵਜੋਂ ਦਰਜ ਕਰੋ।");},total*1000));
+  descriptor="GIN-inspired research sequence: 36 six-second white-noise segments, 5-second inter-segment intervals, 0–3 randomly placed gaps/segment; 2,3,4,5,6,8,10,12,15,20 ms each appears six times. Generated research demo only; not official GIN, no calibration/norms.";
  }else if(type==="dichotic"){
   tone(700,start,0.5,-1);tone(1200,start,0.5,1);
-  descriptor="Simultaneous 700 Hz left / 1200 Hz right, 500 ms; stereo routing demo only, not a dichotic clinical test.";
+  descriptor="Simultaneous 700 Hz left / 1200 Hz right, 500 ms; stereo routing demo only, not a dichotic speech test.";
  }else if(type==="localization"){
   const choices=[{name:"left",pan:-1},{name:"center",pan:0},{name:"right",pan:1}],choice=choices[Math.floor(Math.random()*choices.length)];
   tone(700,start,0.45,choice.pan,0,0.08);
-  descriptor="Virtual stereo pan demonstration; target position="+choice.name+"; use verified stereo headphones. Not a clinical localization test.";
+  descriptor="Virtual stereo pan demonstration; target position="+choice.name+"; verified stereo headphones required. Not real-world localization.";
  }else if(type==="binaural"){
-  const present=Math.random()<0.7,phase=Math.random()<0.5?"S0":"Sπ",sr=ctx.sampleRate,dur=1.6,n=Math.floor(sr*dur),buf=ctx.createBuffer(2,n,sr),left=buf.getChannelData(0),right=buf.getChannelData(1),f=500;
-  for(let i=0;i<n;i++){
-   const noise=(Math.random()*2-1)*0.025;
-   left[i]=noise;right[i]=noise;
-   const env=Math.min(1,i/(sr*0.03),(n-i)/(sr*0.03));
-   if(present){const sig=0.035*Math.sin(2*Math.PI*f*i/sr)*Math.max(0,env);left[i]+=sig;right[i]+=(phase==="S0"?sig:-sig);}
-  }
+  const present=Math.random()<0.7,phase=Math.random()<0.5?"S0":"Sπ",sr=ctx.sampleRate,dur=1.6,n=Math.floor(sr*dur),buf=ctx.createBuffer(2,n,sr),left=buf.getChannelData(0),right=buf.getChannelData(1),freq=500;
+  for(let i=0;i<n;i++){const noise=(Math.random()*2-1)*0.025;left[i]=noise;right[i]=noise;const env=Math.min(1,i/(sr*0.03),(n-i)/(sr*0.03));if(present){const sig=0.035*Math.sin(2*Math.PI*freq*i/sr)*Math.max(0,env);left[i]+=sig;right[i]+=(phase==="S0"?sig:-sig);}}
   const src=ctx.createBufferSource();src.buffer=buf;src.connect(ctx.destination);src.start(start);nodes.push(src);
-  descriptor="Original binaural detection demonstration; tone "+(present?"present":"absent")+", nominal phase condition "+phase+", 500 Hz tone in correlated noise. Not a calibrated MLD test.";
+  descriptor="Concept demonstration only: 500 Hz tone "+(present?"present":"absent")+" in correlated noise, nominal "+phase+" phase. Not official MLD, no calibrated threshold.";
+ }else if(type==="spin"){
+  const lang=document.getElementById("spinLanguage").value,items=spinPracticeItems[lang],item=items[Math.floor(Math.random()*items.length)],voiceLang=lang==="en"?"en-IN":lang==="hi"?"hi-IN":"pa-IN";
+  const utterance=new SpeechSynthesisUtterance(item.text);utterance.lang=voiceLang;utterance.rate=0.88;utterance.pitch=1;
+  const voices=window.speechSynthesis.getVoices(),voice=voices.find(v=>v.lang.toLowerCase()===voiceLang.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(lang));speechVoiceAvailable=!!voice;if(voice)utterance.voice=voice;
+  const noiseBuffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate),ctx.sampleRate),na=noiseBuffer.getChannelData(0);for(let i=0;i<na.length;i++)na[i]=(Math.random()*2-1)*0.18;
+  const noiseSrc=ctx.createBufferSource(),noiseGain=ctx.createGain();noiseSrc.buffer=noiseBuffer;noiseSrc.loop=true;noiseGain.gain.value=Number(document.getElementById("noiseMixLevel").value)/100;noiseSrc.connect(noiseGain);noiseGain.connect(ctx.destination);noiseSrc.start(start);nodes.push(noiseSrc);
+  utterance.onend=()=>{try{noiseSrc.stop();}catch(e){}};
+  stimulusTimers.push(setTimeout(()=>{try{window.speechSynthesis.speak(utterance);}catch(err){document.getElementById("stimulusStatus").textContent=stimMsg("Speech playback failed; try a local authorised recording or check installed voices.","वाणी प्लेबैक विफल; अधिकृत स्थानीय रिकॉर्डिंग या स्थापित आवाज़ें जाँचें।","ਬੋਲੀ ਪਲੇਬੈਕ ਅਸਫਲ; ਅਧਿਕਾਰਤ ਸਥਾਨਕ ਰਿਕਾਰਡਿੰਗ ਜਾਂ ਇੰਸਟਾਲ ਕੀਤੀਆਂ ਆਵਾਜ਼ਾਂ ਜਾਂਚੋ।");}},180));
+  targetKey=item.target;stimulusText=item.text;descriptor="Original SPIN-style practice item "+item.code+"; language="+voiceLang+"; browser speech synthesis + noise output; digital noise gain "+document.getElementById("noiseMixLevel").value+"%; not calibrated SNR or standardized SPIN.";
+  document.getElementById("spinTargetAnswer").hidden=true;document.getElementById("spinTargetAnswer").textContent=stimMsg("Target: ","लक्ष्य: ","ਟਾਰਗੇਟ: ")+item.target+" | "+item.text;
  }else if(type==="speechnoise"){
   const file=document.getElementById("stimulusFile").files[0];
   try{
@@ -262,19 +279,21 @@ async function playGeneratedStimulus(type){
  }else{
   document.getElementById("stimulusStatus").textContent=stimMsg("Load the authorised audio or choose one of the pilot tasks.","अधिकृत ऑडियो लोड करें या कोई पायलट कार्य चुनें।","ਅਧਿਕਾਰਤ ਆਡੀਓ ਲੋਡ ਕਰੋ ਜਾਂ ਪਾਇਲਟ ਕੰਮ ਚੁਣੋ।");try{ctx.close();}catch(_e){}stimulusAudioContext=null;return;
  }
- stimulusNodes=nodes;currentStimulusMeta={type,descriptor,playedAt:new Date().toISOString(),source:type==="speechnoise"?"clinician-provided local speech + app-generated noise":"app-generated pilot stimulus"};
+ stimulusNodes=nodes;currentStimulusMeta={type,descriptor,playedAt:new Date().toISOString(),source:type==="speechnoise"?"clinician-provided local speech + app-generated noise":type==="spin"?"original browser speech synthesis + generated noise":"app-generated pilot stimulus",target:targetKey,stimulusText:stimulusText,voiceAvailable:speechVoiceAvailable};
  document.getElementById("stimulusCondition").value=descriptor;
- document.getElementById("stimulusStatus").textContent=stimMsg("Pilot stimulus played. Enter the participant's response and save the observation. This is not a clinical score.","पायलट स्टिम्युलस चल गया। प्रतिभागी का उत्तर दर्ज करके अवलोकन सहेजें। यह क्लिनिकल स्कोर नहीं है।","ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਚੱਲ ਗਿਆ। ਭਾਗੀਦਾਰ ਦਾ ਜਵਾਬ ਦਰਜ ਕਰਕੇ ਨਿਰੀਖਣ ਸੰਭਾਲੋ। ਇਹ ਕਲੀਨੀਕਲ ਸਕੋਰ ਨਹੀਂ ਹੈ।");
+ document.getElementById("stimulusStatus").textContent=type==="spin"?(speechVoiceAvailable?stimMsg("SPIN-style sentence playing. Ask for repetition; reveal the target only after the response.","SPIN-शैली वाक्य चल रहा है। दोहराने को कहें; उत्तर के बाद ही लक्ष्य दिखाएँ।","SPIN-ਸ਼ੈਲੀ ਵਾਕ ਚੱਲ ਰਿਹਾ ਹੈ। ਦੁਹਰਾਉਣ ਲਈ ਕਹੋ; ਜਵਾਬ ਤੋਂ ਬਾਅਦ ਹੀ ਟਾਰਗੇਟ ਦਿਖਾਓ।"):stimMsg("No matching language voice was found; pronunciation may be unsuitable. Install a suitable voice or use an authorised local recording.","इस भाषा की उपयुक्त आवाज़ नहीं मिली; उच्चारण सही न हो सकता है। उपयुक्त आवाज़ स्थापित करें या अधिकृत स्थानीय रिकॉर्डिंग उपयोग करें।","ਇਸ ਭਾਸ਼ਾ ਦੀ ਢੁਕਵੀਂ ਆਵਾਜ਼ ਨਹੀਂ ਮਿਲੀ; ਉਚਾਰਨ ਠੀਕ ਨਾ ਹੋ ਸਕਦਾ। ਢੁਕਵੀਂ ਆਵਾਜ਼ ਇੰਸਟਾਲ ਕਰੋ ਜਾਂ ਅਧਿਕਾਰਤ ਸਥਾਨਕ ਰਿਕਾਰਡਿੰਗ ਵਰਤੋ।")):type==="gap"?stimMsg("Gap-list sequence scheduled. Tap “I heard a gap” for every perceived gap. Not official GIN and not scored.","गैप सूची क्रम शुरू है। हर सुनाई दिए गैप पर “गैप सुनाई दिया” दबाएँ। यह आधिकारिक GIN नहीं है और स्कोर नहीं किया जाता।","ਗੈਪ-ਸੂਚੀ ਕ੍ਰਮ ਚੱਲ ਰਿਹਾ ਹੈ। ਹਰ ਸੁਣੇ ਗੈਪ 'ਤੇ “ਗੈਪ ਸੁਣਿਆ” ਦਬਾਓ। ਇਹ ਅਧਿਕਾਰਤ GIN ਨਹੀਂ ਅਤੇ ਸਕੋਰ ਨਹੀਂ ਹੁੰਦਾ।"):stimMsg("Pilot stimulus played. Enter the participant's response and save the observation. This is not a clinical score.","पायलट स्टिम्युलस चल गया। प्रतिभागी का उत्तर दर्ज करके अवलोकन सहेजें। यह क्लिनिकल स्कोर नहीं है।","ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਚੱਲ ਗਿਆ। ਭਾਗੀਦਾਰ ਦਾ ਜਵਾਬ ਦਰਜ ਕਰਕੇ ਨਿਰੀਖਣ ਸੰਭਾਲੋ। ਇਹ ਕਲੀਨੀਕਲ ਸਕੋਰ ਨਹੀਂ ਹੈ।");
  ctx.resume().catch(()=>{});
 }
 function stimulusDomain(type){
- return ({discrimination:"Auditory discrimination",pattern:"Auditory pattern recognition",gap:"Temporal processing",dichotic:"Dichotic processing",speechnoise:"Degraded / low-redundancy speech",localization:"Sound localization / lateralization",binaural:"Binaural interaction",other:"Other / clinician-defined"})[type]||"Other / clinician-defined";
+ return ({discrimination:"Auditory discrimination",pattern:"Auditory pattern recognition",gap:"Temporal processing",dichotic:"Dichotic processing",speechnoise:"Degraded / low-redundancy speech",spin:"Speech in noise (original practice)",localization:"Sound localization / lateralization",binaural:"Binaural interaction",other:"Other / clinician-defined"})[type]||"Other / clinician-defined";
 }
 function renderStimulusRecords(){
  const body=document.querySelector("#stimulusRecords tbody");
- body.innerHTML=phoneStimulusRecords.map(r=>"<tr><td>"+esc(r.task)+"</td><td>"+esc(r.stimulus)+"</td><td>"+esc(r.response||"Not recorded")+"</td><td>"+esc(r.notes||"")+"</td></tr>").join("");
+ body.innerHTML=phoneStimulusRecords.map(r=>"<tr><td>"+esc(r.task)+"</td><td>"+esc((r.stimulusText?r.stimulusText+" — ":"")+r.stimulus)+"</td><td>"+esc(r.response||"Not recorded")+"</td><td>"+esc(r.target||"")+"</td><td>"+esc(r.notes||"")+"</td></tr>").join("");
 }
 document.getElementById("noiseMixLevel").addEventListener("input",e=>{document.getElementById("noiseMixValue").textContent=e.target.value+"%";});
+document.getElementById("revealSpinTarget").addEventListener("click",()=>{if(currentStimulusMeta&&currentStimulusMeta.type==="spin")document.getElementById("spinTargetAnswer").hidden=false;});
+document.getElementById("gapHitButton").addEventListener("click",()=>{if(gapProtocolActive){gapTapCount++;document.getElementById("stimulusStatus").textContent=stimMsg("Gap responses recorded: "+gapTapCount,"दर्ज गैप प्रतिक्रियाएँ: "+gapTapCount,"ਦਰਜ ਕੀਤੇ ਗੈਪ ਜਵਾਬ: "+gapTapCount);}});
 document.getElementById("stimulusType").addEventListener("change",renderStimulusGuide);
 document.getElementById("generateStimulus").addEventListener("click",()=>playGeneratedStimulus(document.getElementById("stimulusType").value));
 document.getElementById("stopStimulus").addEventListener("click",()=>{stopStimulusAudio();document.getElementById("stimulusStatus").textContent=stimMsg("Audio stopped.","ऑडियो रोक दिया गया।","ਆਡੀਓ ਰੋਕ ਦਿੱਤਾ ਗਿਆ।");});
@@ -293,7 +312,7 @@ document.getElementById("playUploadedStimulus").addEventListener("click",()=>{
 document.getElementById("recordStimulusResponse").addEventListener("click",()=>{
  if(!currentStimulusMeta){document.getElementById("stimulusStatus").textContent=stimMsg("Play a generated stimulus or local audio file before saving a response.","उत्तर सहेजने से पहले पायलट स्टिम्युलस या स्थानीय ऑडियो चलाएँ।","ਜਵਾਬ ਸੰਭਾਲਣ ਤੋਂ ਪਹਿਲਾਂ ਪਾਇਲਟ ਸਟਿਮੁਲਸ ਜਾਂ ਸਥਾਨਕ ਆਡੀਓ ਚਲਾਓ।");return;}
  const type=currentStimulusMeta.type||document.getElementById("stimulusType").value,domain=stimulusDomain(type),response=document.getElementById("stimulusResponse").value.trim(),condition=document.getElementById("stimulusCondition").value.trim()||currentStimulusMeta.descriptor,notes=document.getElementById("stimulusNotes").value.trim();
- const rec={task:domain,stimulus:condition,response,notes,source:currentStimulusMeta.source,playedAt:currentStimulusMeta.playedAt,language:stimulusLang(),status:"descriptive observation only; no clinical norms"};
+ const rec={task:domain,stimulus:condition,stimulusText:currentStimulusMeta.stimulusText||"",target:currentStimulusMeta.target||"",response,notes,source:currentStimulusMeta.source,playedAt:currentStimulusMeta.playedAt,language:type==="spin"?document.getElementById("spinLanguage").value:stimulusLang(),status:"descriptive observation only; no clinical norms"};
  phoneStimulusRecords.push(rec);renderStimulusRecords();
  addRow(domain,"Phone stimulus lab — pilot / uploaded audio",condition,response,"","No validated norms; descriptive only. Device/transducer calibration not established.");
  document.getElementById("stimulusStatus").textContent=stimMsg("Observation saved to this case. It is descriptive only and does not establish or exclude CAPD.","अवलोकन इस केस में सहेजा गया। यह केवल वर्णनात्मक है और CAPD की पुष्टि या खंडन नहीं करता।","ਨਿਰੀਖਣ ਇਸ ਕੇਸ ਵਿੱਚ ਸੰਭਾਲਿਆ ਗਿਆ। ਇਹ ਸਿਰਫ਼ ਵਰਣਨਾਤਮਕ ਹੈ ਅਤੇ CAPD ਦੀ ਪੁਸ਼ਟੀ ਜਾਂ ਇਨਕਾਰ ਨਹੀਂ ਕਰਦਾ।");
@@ -386,7 +405,7 @@ function bmqrSummary(){
 }
 function list(a){return a.length?"<ul>"+a.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ul>":"<p>None selected / not recorded.</p>";}
 function generate(){let d=data(),p=d.patient,h=d.history,s=d.screening,per=d.peripheral,ts=d.central.tests;let flags=Object.entries(h.safety).filter(x=>x[1]).map(x=>x[0]);let endorsed=s.responses.filter(x=>["Sometimes","Often"].includes(x.response)).length, often=s.responses.filter(x=>x.response==="Often").length;let zs=ts.filter(x=>x.z!==""&&Number.isFinite(Number(x.z))),bad=zs.filter(x=>Number(x.z)<=-2),severe=zs.filter(x=>Number(x.z)<=-3),dom=[...new Set(bad.map(x=>x.domain))];let safety=flags.includes("sudden")||flags.includes("neurological")?'<div class="callout danger"><b>Priority safety flag recorded.</b> Sudden hearing change or acute neurological symptoms require urgent medical assessment; do not delay for CAPD testing.</div>':flags.length?'<div class="callout warn"><b>Safety flags recorded:</b> '+esc(flags.join(", "))+'. Triage clinically and arrange appropriate review.</div>':"";
-let stimHTML=d.central.phoneStimuli&&d.central.phoneStimuli.length?'<h3>Phone stimulus lab observations (descriptive only)</h3><table><tr><th>Task</th><th>Stimulus / condition</th><th>Response</th><th>Notes</th><th>Source / status</th></tr>'+d.central.phoneStimuli.map(r=>'<tr><td>'+esc(r.task)+'</td><td>'+esc(r.stimulus)+'</td><td>'+esc(r.response||"Not recorded")+'</td><td>'+esc(r.notes||"")+'</td><td>'+esc(r.source||"")+'; '+esc(r.status||"")+'</td></tr>').join("")+'</table><p>These are pilot observations only; no clinical norms or diagnostic thresholds are applied.</p>':"<p>No phone stimulus observations recorded.</p>";
+let stimHTML=d.central.phoneStimuli&&d.central.phoneStimuli.length?'<h3>Phone stimulus lab observations (descriptive only)</h3><table><tr><th>Task</th><th>Stimulus / condition</th><th>Response</th><th>Target / answer key</th><th>Notes</th><th>Source / status</th></tr>'+d.central.phoneStimuli.map(r=>'<tr><td>'+esc(r.task)+'</td><td>'+esc((r.stimulusText?r.stimulusText+" — ":"")+r.stimulus)+'</td><td>'+esc(r.response||"Not recorded")+'</td><td>'+esc(r.target||"")+'</td><td>'+esc(r.notes||"")+'</td><td>'+esc(r.source||"")+'; '+esc(r.status||"")+'</td></tr>').join("")+'</table><p>These are pilot observations only; no clinical norms or diagnostic thresholds are applied.</p>':"<p>No phone stimulus observations recorded.</p>";
 let testHTML=ts.length?'<table><tr><th>Domain</th><th>Test</th><th>Condition</th><th>Raw</th><th>Z-score</th><th>Norm / notes</th><th>Review flag</th></tr>'+ts.map(t=>{let z=t.z===""?null:Number(t.z);return '<tr><td>'+esc(t.domain)+'</td><td>'+esc(t.test)+'</td><td>'+esc(t.condition)+'</td><td>'+esc(t.raw)+'</td><td>'+esc(t.z)+'</td><td>'+esc(t.norm)+'</td><td>'+esc(z===null?"Not scored":z<=-3?"≤ −3 SD — confirm / interpret":z<=-2?"≤ −2 SD — review":"No threshold flag")+'</td></tr>';}).join("")+'</table>':"<p>No central auditory tests entered.</p>";
 let report='<article><div style="border-bottom:3px solid #153653;padding-bottom:10px"><div style="color:#176b87;font-weight:bold">AUDIOLOGY • CLINICAL DECISION SUPPORT</div><h1 style="color:#153653">CAPD Assessment & Decision-Support Report</h1><p>Generated '+esc(new Date().toLocaleString())+' · Prototype — clinician review required</p></div>'+safety+
 '<div class="report-section"><h2>Workflow guidance snapshot</h2><p><b>Current stage:</b> '+esc(d.workflow.stage)+'</p><p><b>Suggested next step:</b> '+esc(d.workflow.nextStep)+'</p><p><b>Clinical caution:</b> '+esc(d.workflow.caution)+'</p></div>'+
