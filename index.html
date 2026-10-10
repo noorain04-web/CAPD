@@ -224,7 +224,7 @@ document.getElementById("stimulusFile").addEventListener("change",e=>{
  const file=e.target.files&&e.target.files[0];if(!file)return;
  if(uploadedAudioUrl)URL.revokeObjectURL(uploadedAudioUrl);
  uploadedAudioUrl=URL.createObjectURL(file);uploadedAudio=new Audio(uploadedAudioUrl);uploadedAudio.volume=0.2;
- document.getElementById("stimulusFileName").textContent=file.name+" ("+Math.round(file.size/1024)+" KB) — local playback only";
+ document.getElementById("stimulusFileName").textContent=file.name+" ("+Math.round(file.size/1024)+" KB) — "+stimMsg("local playback only","केवल स्थानीय प्लेबैक","ਸਿਰਫ਼ ਸਥਾਨਕ ਪਲੇਬੈਕ");
  currentStimulusMeta=null;
  document.getElementById("stimulusCondition").value="Local audio file: "+file.name;
 });
@@ -369,6 +369,7 @@ Object.assign(hindiText,{
 "Open SCAP research record / accessible paper":"SCAP शोध रिकॉर्ड / उपलब्ध लेख खोलें","Open SCAP-A article and PDF":"SCAP-A लेख और PDF खोलें","Open STAP preliminary report":"STAP प्रारंभिक रिपोर्ट खोलें","STAP validation study":"STAP मान्यता अध्ययन","Not administered / not recorded":"नहीं किया गया / दर्ज नहीं","SCAP — child checklist":"SCAP — बच्चों की चेकलिस्ट","SCAP-A — adult self-report checklist":"SCAP-A — वयस्क स्वयं-रिपोर्ट चेकलिस्ट","SCAP-A — family informant checklist":"SCAP-A — परिवार द्वारा भरी चेकलिस्ट","STAP — performance-based child screening test":"STAP — बच्चों का प्रदर्शन-आधारित स्क्रीनिंग परीक्षण",
 "Clinical-use limitation:":"नैदानिक उपयोग की सीमा:","Continue →":"आगे बढ़ें →"
 });
+Object.assign(hindiText,{"Reference resources:":"संदर्भ संसाधन:","ASHA CAPD assessment guidance":"ASHA CAPD मूल्यांकन मार्गदर्शन","NCRAR overview of test measures":"NCRAR परीक्षण मापों का अवलोकन","EarSync GitHub (temporal-processing training/demo, not diagnosis)":"EarSync GitHub (टेम्पोरल प्रशिक्षण/डेमो, निदान नहीं)","HeadphoneCheck GitHub (channel/headphone research task, not CAPD test)":"HeadphoneCheck GitHub (चैनल/हेडफोन शोध कार्य, CAPD परीक्षण नहीं)","Tablet-based CAP assessment research":"टैबलेट-आधारित CAP मूल्यांकन शोध"});
 const punjabiText={
 "Case history · functional listening screening · audiology test entry · differential considerations · management plan · downloadable report":"ਕੇਸ ਇਤਿਹਾਸ · ਸੁਣਨ ਦੀ ਕਾਰਜਾਤਮਕ ਸਕ੍ਰੀਨਿੰਗ · ਆਡੀਓਲੋਜੀ ਟੈਸਟ ਐਂਟਰੀ · ਵੱਖ-ਵੱਖ ਸੰਭਾਵਨਾਵਾਂ · ਪ੍ਰਬੰਧ ਯੋਜਨਾ · ਡਾਊਨਲੋਡ ਰਿਪੋਰਟ",
 "CAPD Clinical Decision-Support":"CAPD ਕਲੀਨੀਕਲ ਫੈਸਲਾ-ਸਹਾਇਤਾ",
@@ -388,6 +389,7 @@ const punjabiText={
 "Speech in noise":"ਸ਼ੋਰ ਵਿੱਚ ਬੋਲੀ ਸਮਝਣਾ","Following instructions":"ਹਦਾਇਤਾਂ ਦੀ ਪਾਲਣਾ","Auditory attention":"ਸੁਣਨ ਵਾਲਾ ਧਿਆਨ","Auditory memory":"ਸੁਣੀ ਗੱਲ ਦੀ ਯਾਦ","Sound discrimination":"ਆਵਾਜ਼ਾਂ ਵਿੱਚ ਫ਼ਰਕ ਪਛਾਣਨਾ","Auditory sequencing":"ਸੁਣੀ ਜਾਣਕਾਰੀ ਦਾ ਕ੍ਰਮ","Localization":"ਆਵਾਜ਼ ਦੀ ਦਿਸ਼ਾ ਪਛਾਣਨਾ","Classroom / learning":"ਕਲਾਸ / ਸਿੱਖਣਾ","Rapid / unclear speech":"ਤੇਜ਼ / ਅਸਪਸ਼ਟ ਬੋਲੀ","Cross-setting impact":"ਵੱਖ-ਵੱਖ ਸਥਿਤੀਆਂ ਵਿੱਚ ਅਸਰ","Competing speech":"ਇੱਕੋ ਸਮੇਂ ਬੋਲਦੇ ਲੋਕ","Rapid speech":"ਤੇਜ਼ ਬੋਲੀ","Telephone listening":"ਫ਼ੋਨ 'ਤੇ ਸੁਣਨਾ","Listening effort":"ਸੁਣਨ ਲਈ ਲੱਗਣ ਵਾਲੀ ਮਿਹਨਤ",
 "Not answered":"ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ","Never / rarely":"ਕਦੇ ਨਹੀਂ / ਬਹੁਤ ਘੱਟ","Sometimes":"ਕਦੇ-ਕਦੇ","Often":"ਅਕਸਰ","Unable to judge":"ਅੰਦਾਜ਼ਾ ਨਹੀਂ ਲਗਾ ਸਕਦੇ"
 };
+Object.assign(punjabiText,{"Reference resources:":"ਹਵਾਲਾ ਸਰੋਤ:","ASHA CAPD assessment guidance":"ASHA CAPD ਮੁਲਾਂਕਣ ਮਾਰਗਦਰਸ਼ਨ","NCRAR overview of test measures":"NCRAR ਟੈਸਟ ਮਾਪਾਂ ਦੀ ਜਾਣਕਾਰੀ","EarSync GitHub (temporal-processing training/demo, not diagnosis)":"EarSync GitHub (ਟੈਂਪੋਰਲ ਟ੍ਰੇਨਿੰਗ/ਡੈਮੋ, ਨਿਦਾਨ ਨਹੀਂ)","HeadphoneCheck GitHub (channel/headphone research task, not CAPD test)":"HeadphoneCheck GitHub (ਚੈਨਲ/ਹੈੱਡਫ਼ੋਨ ਖੋਜ ਕੰਮ, CAPD ਟੈਸਟ ਨਹੀਂ)","Tablet-based CAP assessment research":"ਟੈਬਲੇਟ-ਅਧਾਰਿਤ CAP ਮੁਲਾਂਕਣ ਖੋਜ"});
 const questionPunjabi={
 "Speech in noise":["ਸ਼ੋਰ ਵਿੱਚ ਬੋਲੀ ਸਮਝਣਾ","ਜਦੋਂ ਕਈ ਲੋਕ ਗੱਲ ਕਰ ਰਹੇ ਹੋਣ ਜਾਂ ਕਮਰੇ ਵਿੱਚ ਸ਼ੋਰ ਹੋਵੇ ਤਾਂ ਗੱਲ ਸਮਝਣ ਵਿੱਚ ਮੁਸ਼ਕਲ।"],
 "Following instructions":["ਹਦਾਇਤਾਂ ਦੀ ਪਾਲਣਾ","ਬੋਲੀ ਗਈਆਂ ਹਦਾਇਤਾਂ ਦੁਹਰਾਉਣ, ਸੌਖੀਆਂ ਕਰਨ ਜਾਂ ਕਦਮਾਂ ਵਿੱਚ ਦੱਸਣ ਦੀ ਲੋੜ।"],
